@@ -87,6 +87,8 @@ elif is_dust(HARDNESS, POROSITY):
     second_drill = Drill(True,100,5) #client did not specify how long. must double-check.
     
     rover = LunarRover(POROSITY, HARDNESS, [first_drill,claw, second_drill])
+else:
+    raise ValueError('invalid material, not sure how to handle it.')
 
 rover.execute()
 
