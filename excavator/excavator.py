@@ -65,12 +65,30 @@ class Claw():
         rep+= ' open' if self.isOpen else ' closed'
         return rep
 
+def is_stone(HARDNESS, POROSITY):
+    return HARDNESS > 0 and POROSITY <= 0
 
-lr = LunarRover(100,5, [])
-d = Drill(True, '15RPM',100)
-d2 = Drill(False, '45RPM',100)
-claw = Claw()
-print(d)
-print(lr)
-lr2 = LunarRover(100,5,[d,d2,claw])
-lr2.execute()
+def is_dust(HARDNESS, POROSITY):
+    return HARDNESS <= 0 and POROSITY > 0
+
+
+HARDNESS = 1 #positive for hard, negative or 0 for soft
+POROSITY = 0 #positive for porose (like dust), negative or 0 for soft
+
+if is_stone(HARDNESS, POROSITY):
+    first_drill = Drill(True,150,10)
+    claw = Claw()
+    second_drill = Drill(False,150,10) #client did not specify how long. must double-check.
+    
+    rover = LunarRover(POROSITY, HARDNESS, [first_drill,claw, second_drill])
+elif is_dust(HARDNESS, POROSITY):
+    first_drill = Drill(False,100,5)
+    claw = Claw()
+    second_drill = Drill(True,100,5) #client did not specify how long. must double-check.
+    
+    rover = LunarRover(POROSITY, HARDNESS, [first_drill,claw, second_drill])
+
+rover.execute()
+
+
+
