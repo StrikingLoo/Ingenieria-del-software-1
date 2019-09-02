@@ -66,27 +66,35 @@ class Claw():
         return rep
 
 def is_stone(HARDNESS, POROSITY):
-    return HARDNESS > 0 and POROSITY <= 0
+    return HARDNESS > 0 and POROSITY < 0
 
 def is_dust(HARDNESS, POROSITY):
-    return HARDNESS <= 0 and POROSITY > 0
+    return HARDNESS < 0 and POROSITY > 0
+
+def is_intermediate(HARDNESS, POROSITY):
+    return POROSITY==0 and HARDNESS==0
 
 
 HARDNESS = 1 #positive for hard, negative or 0 for soft
-POROSITY = 0 #positive for porose (like dust), negative or 0 for soft
+POROSITY = -1 #positive for porose (like dust), negative or 0 for soft
 
 if is_stone(HARDNESS, POROSITY):
     first_drill = Drill(True,150,10)
     claw = Claw()
     second_drill = Drill(False,150,10) #client did not specify how long. must double-check.
     
-    rover = LunarRover(POROSITY, HARDNESS, [first_drill,claw, second_drill])
+    rover = LunarRover(POROSITY, HARDNESS, [first_drill, claw, second_drill])
 elif is_dust(HARDNESS, POROSITY):
     first_drill = Drill(False,100,5)
     claw = Claw()
     second_drill = Drill(True,100,5) #client did not specify how long. must double-check.
     
-    rover = LunarRover(POROSITY, HARDNESS, [first_drill,claw, second_drill])
+    rover = LunarRover(POROSITY, HARDNESS, [first_drill, claw, second_drill])
+elif is_intermediate(HARDNESS, POROSITY):
+    first_drill = Drill(True,150,5)
+    claw = Claw()
+    second_drill = Drill(False,100,10) 
+    rover = LunarRover(POROSITY, HARDNESS, [first_drill, claw, second_drill])
 else:
     raise ValueError('invalid material, not sure how to handle it.')
 
