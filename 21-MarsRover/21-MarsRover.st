@@ -277,21 +277,29 @@ asVector
 
 !classDefinition: #MarsRover category: #'21-MarsRover'!
 Object subclass: #MarsRover
-	instanceVariableNames: 'position direction behaviorForCommandDict'
+	instanceVariableNames: 'position direction behaviorForCommandDict movementBehavior'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '21-MarsRover'!
 
-!MarsRover methodsFor: 'initialization' stamp: 'C. L. 10/6/2019 14:43:15'!
+!MarsRover methodsFor: 'initialization' stamp: 'L S 10/7/2019 17:17:32'!
 initializeAtPosition: aStartingPosition facing: aDirection
 	position := aStartingPosition .
 	direction := CardinalPoint with: aDirection.
+	self setBehaviorsForCommands! !
+
+!MarsRover methodsFor: 'initialization' stamp: 'L S 10/7/2019 17:30:32'!
+setBehaviorsForCommands
+	movementBehavior := MovementBehavior new.
 	
 	behaviorForCommandDict := Dictionary new.
-	behaviorForCommandDict add: $f->[position := position + direction asVector].
-	behaviorForCommandDict add: $b->[position := position - direction asVector].
-	behaviorForCommandDict add: $r->[direction := direction rotateCW].
-	behaviorForCommandDict add: $l->[direction := direction rotateCCW].! !
+	
+	behaviorForCommandDict add: $f->[position := movementBehavior moveForward:  position with: direction ].
+	behaviorForCommandDict add: $b->[position := movementBehavior moveBackward:  position with: direction].
+	behaviorForCommandDict add: $r->[direction := movementBehavior rotateCW: direction].
+	behaviorForCommandDict add: $l->[direction := movementBehavior rotateCCW: direction].
+	
+	! !
 
 
 !MarsRover methodsFor: 'moving' stamp: 'C. L. 10/6/2019 14:18:41'!
@@ -332,3 +340,27 @@ atPosition: aStartingPosition facing: aDirection
 !MarsRover class methodsFor: 'errors' stamp: 'C. L. 10/6/2019 12:06:16'!
 invalidCommandErrorDescription
 	^'Invalid command.'! !
+
+
+!classDefinition: #MovementBehavior category: #'21-MarsRover'!
+Object subclass: #MovementBehavior
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '21-MarsRover'!
+
+!MovementBehavior methodsFor: 'moving' stamp: 'L S 10/7/2019 17:26:10'!
+moveBackward: aPosition with: aDirection
+    ^ aPosition - aDirection asVector.! !
+
+!MovementBehavior methodsFor: 'moving' stamp: 'L S 10/7/2019 17:26:24'!
+moveForward: aPosition with: aDirection
+    ^ aPosition + aDirection asVector.! !
+
+!MovementBehavior methodsFor: 'moving' stamp: 'L S 10/7/2019 17:26:48'!
+rotateCCW: aDirection
+    ^aDirection rotateCCW! !
+
+!MovementBehavior methodsFor: 'moving' stamp: 'L S 10/7/2019 17:26:58'!
+rotateCW: aDirection
+    ^aDirection rotateCW! !
