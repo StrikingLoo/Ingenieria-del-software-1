@@ -125,6 +125,20 @@ test09PlayerOWinsVertically
 	self assert: (terniLapilliBoard whoWon) equals: 'O'.
 ! !
 
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 18:19:17'!
+test09PlayerXWinsHorizontally
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 1@1.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 1@2.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 1@3.
+	self assert: (terniLapilliBoard whoWon) equals: 'X'.
+! !
+
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/16/2019 21:29:56'!
 test10PlayerXWinsHorizontally
     
@@ -137,6 +151,35 @@ test10PlayerXWinsHorizontally
 	terniLapilliBoard play: 2@2.
 	terniLapilliBoard play: 3@3.
 	self assert: (terniLapilliBoard whoWon) equals: 'X'.
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 18:21:48'!
+test10PlayerXWinsVertically
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 1@1.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 2@3.
+	terniLapilliBoard play: 3@1.
+	self assert: (terniLapilliBoard whoWon) equals: 'X'.
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 18:50:23'!
+test11PlayerOWinsVerticallyOthers
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 1@1.
+	terniLapilliBoard play: 1@2.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 3@3.
+	terniLapilliBoard play: 3@2.
+	self assert: (terniLapilliBoard whoWon) equals: 'O'.
 ! !
 
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/16/2019 21:30:11'!
@@ -166,6 +209,20 @@ test12PlayerXWinsDiagonallyUpward
 	terniLapilliBoard play: 1@3.
 	
 	self assert: terniLapilliBoard whoWon equals: 'X'.! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 18:50:45'!
+test12PlayerXWinsHorizontallyOthers
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 3@1.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 3@2.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 3@3.
+	self assert: (terniLapilliBoard whoWon) equals: 'X'.
+! !
 
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 19:09:00'!
 test13XCanMovePegWhen6PiecesAreOnTheBoard
@@ -232,6 +289,22 @@ test16XCannotMovePegWhenMovingToTheSameSquare
 	self should: [terniLapilliBoard slide: 1@1 to: 1@1.] raise: InvalidSlideError .
 ! !
 
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 20:07:07'!
+test16XCannotSlideMoreThanOneSpaceVertically
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 3@1.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 3@2.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 1@1.
+	terniLapilliBoard play: 3@3.
+	
+	self should: [terniLapilliBoard slide: 1@1 to: 1@3.] raise: InvalidSlideError .
+! !
+
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 20:08:47'!
 test17XCannotSlideMoreThanOneSpaceHorizontally
     
@@ -247,6 +320,20 @@ test17XCannotSlideMoreThanOneSpaceHorizontally
 	
 	self should: [terniLapilliBoard slide: 1@1 to: 3@1.] raise: InvalidSlideError .
 ! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 20:17:47'!
+test18PlayerXWinsDiagonallyDownward
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 1@1.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 2@3.
+	terniLapilliBoard play: 3@3.
+	
+	self assert: terniLapilliBoard whoWon equals: 'X'.! !
 
 !TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/16/2019 21:28:00'!
 test18XCannotSlideMoreThanOneSpaceVertically
@@ -264,26 +351,40 @@ test18XCannotSlideMoreThanOneSpaceVertically
 	self should: [terniLapilliBoard slide: 1@1 to: 1@3.] raise: InvalidSlideError .
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/16/2019 21:28:08'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 20:18:28'!
+test19PlayerXWinsDiagonallyUpward
+    
+	  |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 3@1.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 2@2.
+	terniLapilliBoard play: 2@3.
+	terniLapilliBoard play: 1@3.
+	
+	self assert: terniLapilliBoard whoWon equals: 'X'.! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 01:01:52'!
 test19XCannotSlideAlongANonPrincipalDiagonal
     
 	  |terniLapilliBoard|
 	
 	terniLapilliBoard := TerniLapilli new.
 	terniLapilliBoard play: 2@2.
-	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 2@3.
 	terniLapilliBoard play: 3@2.
 	terniLapilliBoard play: 3@1.
 	terniLapilliBoard play: 3@3.
 	terniLapilliBoard play: 1@2.
 	
-	self should: [terniLapilliBoard slide: 3@2 to: 2@3.] raise: InvalidSlideError .
+	self should: [terniLapilliBoard slide: 3@2 to: 2@1.] raise: InvalidSlideError .
 ! !
 
 
 !classDefinition: #TerniLapilli category: #'22-TerniLapilli'!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'nextPlayer board diagonals'
+	instanceVariableNames: 'nextPlayer board'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '22-TerniLapilli'!
@@ -309,11 +410,11 @@ slide: aStartingPosition to: anEndingPosition
 ! !
 
 
-!TerniLapilli methodsFor: 'moving restrictions' stamp: 'C. L. 10/16/2019 20:53:38'!
+!TerniLapilli methodsFor: 'moving restrictions' stamp: 'L S 10/17/2019 01:04:01'!
 canGoAlongDiagonalLineFrom: aStartingPosition to: anEndingPosition
 	| positions |
 	positions := Set with: aStartingPosition with: anEndingPosition .
-	^(diagonals anySatisfy: [:diagonal | diagonal includesAllOf: positions])! !
+	^(self validDiagonals anySatisfy: [:diagonal | diagonal includesAllOf: positions])! !
 
 !TerniLapilli methodsFor: 'moving restrictions' stamp: 'C. L. 10/16/2019 20:38:04'!
 canGoAlongHorizontalLineFrom: aStartingPosition to: anEndingPosition
@@ -336,6 +437,14 @@ neighborsAlongBoardLinesFrom: aStartingPosition to: anEndingPosition
 		and: ((aStartingPosition x - anEndingPosition x) abs <= 1)
 		and: ((aStartingPosition y - anEndingPosition y) abs <= 1)
 		and: (self canGoAlongLineFrom: aStartingPosition to: anEndingPosition).! !
+
+!TerniLapilli methodsFor: 'moving restrictions' stamp: 'L S 10/17/2019 01:05:20'!
+validDiagonals
+    |ascendingDiagonal descendingDiagonal mainDiagonals|
+    ascendingDiagonal := Set with: (1@1) with: (2@2) with: (3@3).
+    descendingDiagonal := Set with: (1@3) with: (2@2) with: (3@1).
+    mainDiagonals := Set with: ascendingDiagonal with: descendingDiagonal .
+    ^mainDiagonals! !
 
 
 !TerniLapilli methodsFor: 'winning conditions' stamp: 'L S 10/10/2019 20:47:06'!
@@ -387,15 +496,12 @@ wonVertically: aPlayer
     ^victory! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'C. L. 10/16/2019 20:50:26'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'L S 10/17/2019 01:03:01'!
 initialize
-    | ascendingDiagonal descendingDiagonal |
     nextPlayer := 'X'.
     board := Dictionary new.
 
-    ascendingDiagonal := Set with: (1@1) with: (2@2) with: (3@3).
-    descendingDiagonal := Set with: (1@3) with: (2@2) with: (3@1).
-    diagonals := Set with: ascendingDiagonal with: descendingDiagonal .! !
+    ! !
 
 
 !TerniLapilli methodsFor: 'accessing' stamp: 'C. L. 10/16/2019 20:16:38'!
@@ -418,3 +524,13 @@ player: aPlayer playedOn: aPosition
 !TerniLapilli methodsFor: 'accessing' stamp: 'L S 10/10/2019 17:27:43'!
 playsNext
     ^nextPlayer! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TerniLapilli class' category: #'22-TerniLapilli'!
+TerniLapilli class
+	instanceVariableNames: ''!
+
+!TerniLapilli class methodsFor: 'as yet unclassified' stamp: 'L S 10/10/2019 20:45:55'!
+gameOver
+	^(self won: 'X') or: (self won: 'O')! !
