@@ -381,6 +381,27 @@ test19XCannotSlideAlongANonPrincipalDiagonal
 	self should: [terniLapilliBoard slide: 3@2 to: 2@1.] raise: InvalidSlideError .
 ! !
 
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 17:39:05'!
+test20PuttingABunchOfPieces
+
+ |terniLapilliBoard|
+	
+	terniLapilliBoard := TerniLapilli new.
+	terniLapilliBoard play: 1@1.
+	terniLapilliBoard play: 1@2.
+	terniLapilliBoard play: 2@1.
+	terniLapilliBoard play: 2@2.
+	self assert: terniLapilliBoard placingOver equals: false.
+	terniLapilliBoard play: 3@2.
+	terniLapilliBoard play: 3@1.
+	self should: [terniLapilliBoard play: 1@3.] raise: PlayingAfterGameOver .
+	
+	
+	
+
+    
+! !
+
 
 !classDefinition: #TerniLapilli category: #'22-TerniLapilli'!
 Object subclass: #TerniLapilli
@@ -389,11 +410,12 @@ Object subclass: #TerniLapilli
 	poolDictionaries: ''
 	category: '22-TerniLapilli'!
 
-!TerniLapilli methodsFor: 'moving' stamp: 'C. L. 10/16/2019 20:17:31'!
+!TerniLapilli methodsFor: 'moving' stamp: 'L S 10/17/2019 17:37:24'!
 play: aPosition
     (self hasPositionInsideBounds: aPosition) ifFalse: [ PlayingOutOfBoundsError signal ].
     ( (self onPosition: aPosition) = '-') ifFalse: [PlayingOnNonEmptySquareError signal ].
     ( self gameOver) ifTrue: [PlayingAfterGameOver signal ].
+    ( self placingOver) ifTrue: [PlayingAfterGameOver signal ]. 
     board at: aPosition put: self playsNext.
     
     (self playsNext = 'X') ifTrue: [nextPlayer :='O'] ifFalse: [nextPlayer := 'X']! !
@@ -437,6 +459,10 @@ neighborsAlongBoardLinesFrom: aStartingPosition to: anEndingPosition
 		and: ((aStartingPosition x - anEndingPosition x) abs <= 1)
 		and: ((aStartingPosition y - anEndingPosition y) abs <= 1)
 		and: (self canGoAlongLineFrom: aStartingPosition to: anEndingPosition).! !
+
+!TerniLapilli methodsFor: 'moving restrictions' stamp: 'L S 10/17/2019 17:36:43'!
+placingOver
+    ^ (board occurrencesOf: nextPlayer) = 3! !
 
 !TerniLapilli methodsFor: 'moving restrictions' stamp: 'L S 10/17/2019 01:05:20'!
 validDiagonals
