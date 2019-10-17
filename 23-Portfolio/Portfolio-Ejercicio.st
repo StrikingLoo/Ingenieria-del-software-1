@@ -1,3 +1,113 @@
+!classDefinition: #DuplicatedAccountError category: #'Portfolio-Ejercicio'!
+Error subclass: #DuplicatedAccountError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
+
+
+!classDefinition: #PortfolioTest category: #'Portfolio-Ejercicio'!
+TestCase subclass: #PortfolioTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 19:06:07'!
+test01PortfolioWithEmptyAccountHasNoAmount
+    |zeroAmountPortfolio|
+    
+    zeroAmountPortfolio := Portfolio new.
+
+    zeroAmountPortfolio add: (ReceptiveAccount new).
+    self assert: zeroAmountPortfolio balance equals: 0.! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 19:17:53'!
+test02PortfolioWithOneAccountComputesBalanceRight
+    |zeroAmountPortfolio anAccount|
+    
+    zeroAmountPortfolio := Portfolio new.
+    anAccount := self accountWithBalance: 100.
+
+    zeroAmountPortfolio add: (anAccount).
+
+    self assert: zeroAmountPortfolio balance equals: 100.! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 19:18:04'!
+test03PortfolioWithAccountsComputesBalanceRight
+    |zeroAmountPortfolio anAccount anotherAccount|
+    
+    zeroAmountPortfolio := Portfolio new.
+    anAccount := self accountWithBalance: 100.
+
+    anotherAccount := self accountWithBalance: 100 .
+
+    zeroAmountPortfolio add: (anAccount).
+    zeroAmountPortfolio add: (anotherAccount).
+
+    self assert: zeroAmountPortfolio balance equals: 200.! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 19:18:13'!
+test04PortfolioWithPortfoliosComputesBalanceRight
+    |aPortfolio aSecondPortfolio anAccount anotherAccount|
+    
+    aPortfolio := Portfolio new.
+    aSecondPortfolio := Portfolio new.
+
+    anAccount := self accountWithBalance: 100.
+
+    anotherAccount := self accountWithBalance: 100 .
+
+    aPortfolio add: (anAccount).
+    aSecondPortfolio add: (anotherAccount).
+    aPortfolio add: aSecondPortfolio .
+
+    self assert: aPortfolio balance equals: 200.! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 19:28:09'!
+test05PortfolioWithAccountHasTransaction
+    |aPortfolio anAccount withdrawal |
+    
+    aPortfolio := Portfolio new.
+    anAccount := ReceptiveAccount new.
+    
+    withdrawal := Withdraw for: 10.
+    anAccount withdraw: withdrawal.
+    aPortfolio add: (anAccount).
+
+    self assert: (aPortfolio hasRegistered: withdrawal )! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 20:23:22'!
+test06PortfolioCannotRepeatAccounts
+    |aPortfolio anAccount |
+    
+    aPortfolio := Portfolio new.
+    anAccount := ReceptiveAccount new.
+
+    aPortfolio add: anAccount.
+    self should: [aPortfolio add: anAccount ]  raise: DuplicatedAccountError! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 20:23:59'!
+test07PortfolioCannotRepeatAccountsAmongPortfolios
+    |aPortfolio anotherPortfolio anAccount |
+    
+    aPortfolio := Portfolio new.
+    anotherPortfolio := Portfolio new.
+    anAccount := ReceptiveAccount new.
+
+    aPortfolio add: anAccount.
+    anotherPortfolio add: anAccount.
+    self should: [aPortfolio add: anotherPortfolio ]  raise: DuplicatedAccountError! !
+
+
+!PortfolioTest methodsFor: 'utils' stamp: 'L S 10/17/2019 19:17:18'!
+accountWithBalance: aBalance
+    |anAccount|
+    anAccount := ReceptiveAccount new.
+    Deposit register: 100 on: anAccount .
+    ^anAccount ! !
+
+
 !classDefinition: #ReceptiveAccountTest category: #'Portfolio-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
 	instanceVariableNames: ''
@@ -62,7 +172,7 @@ test05ReceptiveAccountKnowsRegisteredTransactions
 	self assert: (account hasRegistered: withdraw).
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:20:54'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/17/2019 20:00:08'!
 test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 
 	| account deposit withdraw |
@@ -72,7 +182,7 @@ test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 	withdraw := Withdraw for: 50.
 		
 	self deny: (account hasRegistered: deposit).
-	self deny: (account hasRegistered:withdraw).
+	self deny: (account hasRegistered: withdraw).
 ! !
 
 !ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:21:24'!
@@ -194,8 +304,81 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
+!classDefinition: #Holding category: #'Portfolio-Ejercicio'!
+Object subclass: #Holding
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
+
+!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:14:46'!
+add: aHoldee
+    self subclassResponsibility ! !
+
+!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:14:59'!
+balance
+    self subclassResponsibility ! !
+
+!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:15:11'!
+children
+    self subclassResponsibility ! !
+
+!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:15:48'!
+hasRegistered: aTransaction
+
+    self subclassResponsibility ! !
+
+!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:16:00'!
+initialize
+    self subclassResponsibility ! !
+
+!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:16:11'!
+transactions
+    self subclassResponsibility ! !
+
+
+!classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
+Holding subclass: #Portfolio
+	instanceVariableNames: 'holdees'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:27:57'!
+add: aHoldee
+    (self children includes: aHoldee) ifTrue: [DuplicatedAccountError signal].
+    (aHoldee children anySatisfy: [:child | self children includes: child ]) ifTrue: [DuplicatedAccountError signal].
+    holdees add: aHoldee.! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:07:06'!
+balance
+    ^holdees sum: [ :aHoldee | aHoldee balance ] ifEmpty: [ 0 ]! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:10:48'!
+children
+    |successors|
+    successors := OrderedCollection new.
+    holdees collect: [:aHoldee | successors addAll: (aHoldee children)].
+    ^successors! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:30:26'!
+hasRegistered: aTransaction
+    ^ self transactions anySatisfy: [:anotherTransaction | anotherTransaction = aTransaction ]! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:05:24'!
+initialize
+    holdees := OrderedCollection new.! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:35:03'!
+transactions
+    |totalTransactions|
+    totalTransactions := OrderedCollection new.
+    holdees collect: [:aHoldee | totalTransactions addAll: aHoldee transactions ] .
+    ^ totalTransactions! !
+
+
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
-Object subclass: #ReceptiveAccount
+Holding subclass: #ReceptiveAccount
 	instanceVariableNames: 'withdrawals deposits'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -241,3 +424,11 @@ hasRegistered: aTransaction
 
 	^ (withdrawals includes: aTransaction) or: (deposits includes: aTransaction)
 ! !
+
+
+!ReceptiveAccount methodsFor: 'deletable' stamp: 'L S 10/17/2019 20:11:54'!
+children
+    |children|
+    children := OrderedCollection new.
+    children add: self.
+    ^children! !
