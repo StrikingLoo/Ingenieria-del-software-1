@@ -101,6 +101,12 @@ value
 
 	self subclassResponsibility ! !
 
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 18:49:42'!
+registerOn: anAccount
+    
+    self subclassResponsibility ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'AccountTransaction class' category: #'Portfolio-Ejercicio'!
@@ -130,6 +136,11 @@ initializeFor: aValue
 
 	value := aValue ! !
 
+
+!Deposit methodsFor: 'value' stamp: 'L S 10/17/2019 18:49:00'!
+registerOn: anAccount
+    
+    anAccount deposit: self! !
 
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
@@ -161,6 +172,11 @@ initializeFor: aValue
 	value := aValue ! !
 
 
+!Withdraw methodsFor: 'value' stamp: 'L S 10/17/2019 18:48:33'!
+registerOn: anAccount
+    
+    anAccount withdraw: self! !
+
 !Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
 value
 
@@ -180,37 +196,48 @@ for: aValue
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
 Object subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
+	instanceVariableNames: 'withdrawals deposits'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'NR 10/17/2019 15:06:56'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'L S 10/17/2019 18:51:44'!
 initialize
 
-	transactions := OrderedCollection new.! !
+	deposits := OrderedCollection new.
+	withdrawals := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:50:48'!
+deposit: aTransaction
+    deposits add: aTransaction! !
+
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:51:23'!
 register: aTransaction
 
-	transactions add: aTransaction 
+	aTransaction registerOn: self
 ! !
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:53:13'!
 transactions 
 
-	^ transactions copy! !
+	^ (withdrawals, deposits)! !
+
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:51:01'!
+withdraw: aTransaction
+    withdrawals add: aTransaction! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'HAW 5/23/2019 15:19:32'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'L S 10/17/2019 18:55:25'!
 balance
+      |accountBalance|
+	accountBalance := deposits sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 ].
+	accountBalance := accountBalance - (withdrawals sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 ]).
+	^accountBalance ! !
 
-	^transactions sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 ]! !
 
-
-!ReceptiveAccount methodsFor: 'testing' stamp: 'NR 10/17/2019 03:28:43'!
+!ReceptiveAccount methodsFor: 'testing' stamp: 'L S 10/17/2019 18:52:27'!
 hasRegistered: aTransaction
 
-	^ transactions includes: aTransaction 
+	^ (withdrawals includes: aTransaction) or: (deposits includes: aTransaction)
 ! !
