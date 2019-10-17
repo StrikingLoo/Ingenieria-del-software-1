@@ -87,7 +87,7 @@ test06PortfolioCannotRepeatAccounts
     aPortfolio add: anAccount.
     self should: [aPortfolio add: anAccount ]  raise: DuplicatedAccountError! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 20:23:59'!
+!PortfolioTest methodsFor: 'tests' stamp: 'L S 10/17/2019 20:46:03'!
 test07PortfolioCannotRepeatAccountsAmongPortfolios
     |aPortfolio anotherPortfolio anAccount |
     
@@ -97,7 +97,7 @@ test07PortfolioCannotRepeatAccountsAmongPortfolios
 
     aPortfolio add: anAccount.
     anotherPortfolio add: anAccount.
-    self should: [aPortfolio add: anotherPortfolio ]  raise: DuplicatedAccountError! !
+    self should: [aPortfolio add: anotherPortfolio ]  raise: DuplicatedAccountError.! !
 
 
 !PortfolioTest methodsFor: 'utils' stamp: 'L S 10/17/2019 19:17:18'!
@@ -344,21 +344,21 @@ Holding subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:27:57'!
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:43:48'!
 add: aHoldee
-    (self children includes: aHoldee) ifTrue: [DuplicatedAccountError signal].
-    (aHoldee children anySatisfy: [:child | self children includes: child ]) ifTrue: [DuplicatedAccountError signal].
+    (self childrenAccounts includes: aHoldee) ifTrue: [DuplicatedAccountError signal].
+    (aHoldee childrenAccounts anySatisfy: [:child | self childrenAccounts includes: child ]) ifTrue: [DuplicatedAccountError signal].
     holdees add: aHoldee.! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:07:06'!
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:44:00'!
 balance
-    ^holdees sum: [ :aHoldee | aHoldee balance ] ifEmpty: [ 0 ]! !
+    ^ holdees sum: [ :aHoldee | aHoldee balance ] ifEmpty: [ 0 ]! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:10:48'!
-children
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:42:19'!
+childrenAccounts
     |successors|
     successors := OrderedCollection new.
-    holdees collect: [:aHoldee | successors addAll: (aHoldee children)].
+    holdees collect: [:aHoldee | successors addAll: (aHoldee childrenAccounts)].
     ^successors! !
 
 !Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:30:26'!
@@ -426,8 +426,8 @@ hasRegistered: aTransaction
 ! !
 
 
-!ReceptiveAccount methodsFor: 'deletable' stamp: 'L S 10/17/2019 20:11:54'!
-children
+!ReceptiveAccount methodsFor: 'deletable' stamp: 'L S 10/17/2019 20:44:59'!
+childrenAccounts
     |children|
     children := OrderedCollection new.
     children add: self.
