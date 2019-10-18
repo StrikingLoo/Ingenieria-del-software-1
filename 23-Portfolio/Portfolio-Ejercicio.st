@@ -344,9 +344,8 @@ Holding subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:43:48'!
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 21:10:08'!
 add: aHoldee
-    (self childrenAccounts includes: aHoldee) ifTrue: [DuplicatedAccountError signal].
     (aHoldee childrenAccounts anySatisfy: [:child | self childrenAccounts includes: child ]) ifTrue: [DuplicatedAccountError signal].
     holdees add: aHoldee.! !
 
