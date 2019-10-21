@@ -201,21 +201,23 @@ test07AccountKnowsItsTransactions
 
 !classDefinition: #AccountTransaction category: #'Portfolio-Ejercicio'!
 Object subclass: #AccountTransaction
-	instanceVariableNames: ''
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
-value 
-
-	self subclassResponsibility ! !
-
-
-!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 18:49:42'!
+!AccountTransaction methodsFor: 'value' stamp: 'C. L. 10/21/2019 14:17:16'!
 registerOn: anAccount
-    
     self subclassResponsibility ! !
+
+!AccountTransaction methodsFor: 'value' stamp: 'C. L. 10/21/2019 14:05:16'!
+value 
+	^value! !
+
+
+!AccountTransaction methodsFor: 'initialization' stamp: 'C. L. 10/21/2019 14:17:29'!
+initializeFor: aValue
+	value := aValue ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -236,26 +238,15 @@ register: aValue on: account
 
 !classDefinition: #Deposit category: #'Portfolio-Ejercicio'!
 AccountTransaction subclass: #Deposit
-	instanceVariableNames: 'value'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
-
-!Deposit methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:45'!
-initializeFor: aValue
-
-	value := aValue ! !
-
 
 !Deposit methodsFor: 'value' stamp: 'L S 10/17/2019 18:49:00'!
 registerOn: anAccount
     
     anAccount deposit: self! !
-
-!Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
-value
-
-	^ value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -271,26 +262,15 @@ for: aValue
 
 !classDefinition: #Withdraw category: #'Portfolio-Ejercicio'!
 AccountTransaction subclass: #Withdraw
-	instanceVariableNames: 'value'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
-
-!Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
-initializeFor: aValue
-
-	value := aValue ! !
-
 
 !Withdraw methodsFor: 'value' stamp: 'L S 10/17/2019 18:48:33'!
 registerOn: anAccount
     
     anAccount withdraw: self! !
-
-!Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
-value
-
-	^ value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -311,28 +291,25 @@ Object subclass: #Holding
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:14:46'!
-add: aHoldee
+!Holding methodsFor: 'initialization' stamp: 'L S 10/17/2019 20:16:00'!
+initialize
     self subclassResponsibility ! !
 
-!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:14:59'!
+
+!Holding methodsFor: 'holding information' stamp: 'L S 10/17/2019 20:14:59'!
 balance
     self subclassResponsibility ! !
 
-!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:15:11'!
-children
+!Holding methodsFor: 'holding information' stamp: 'C. L. 10/21/2019 14:32:42'!
+childrenAccounts
     self subclassResponsibility ! !
 
-!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:15:48'!
+!Holding methodsFor: 'holding information' stamp: 'L S 10/17/2019 20:15:48'!
 hasRegistered: aTransaction
 
     self subclassResponsibility ! !
 
-!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:16:00'!
-initialize
-    self subclassResponsibility ! !
-
-!Holding methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:16:11'!
+!Holding methodsFor: 'holding information' stamp: 'L S 10/17/2019 20:16:11'!
 transactions
     self subclassResponsibility ! !
 
@@ -344,31 +321,33 @@ Holding subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 21:10:08'!
+!Portfolio methodsFor: 'initialization' stamp: 'L S 10/17/2019 19:05:24'!
+initialize
+    holdees := OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'adding accounts' stamp: 'L S 10/17/2019 21:10:08'!
 add: aHoldee
     (aHoldee childrenAccounts anySatisfy: [:child | self childrenAccounts includes: child ]) ifTrue: [DuplicatedAccountError signal].
     holdees add: aHoldee.! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:44:00'!
+
+!Portfolio methodsFor: 'holding information' stamp: 'L S 10/17/2019 20:44:00'!
 balance
     ^ holdees sum: [ :aHoldee | aHoldee balance ] ifEmpty: [ 0 ]! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 20:42:19'!
+!Portfolio methodsFor: 'holding information' stamp: 'L S 10/17/2019 20:42:19'!
 childrenAccounts
     |successors|
     successors := OrderedCollection new.
     holdees collect: [:aHoldee | successors addAll: (aHoldee childrenAccounts)].
     ^successors! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:30:26'!
+!Portfolio methodsFor: 'holding information' stamp: 'L S 10/17/2019 19:30:26'!
 hasRegistered: aTransaction
     ^ self transactions anySatisfy: [:anotherTransaction | anotherTransaction = aTransaction ]! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:05:24'!
-initialize
-    holdees := OrderedCollection new.! !
-
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'L S 10/17/2019 19:35:03'!
+!Portfolio methodsFor: 'holding information' stamp: 'L S 10/17/2019 19:35:03'!
 transactions
     |totalTransactions|
     totalTransactions := OrderedCollection new.
@@ -390,44 +369,39 @@ initialize
 	withdrawals := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:50:48'!
+!ReceptiveAccount methodsFor: 'transaction registration' stamp: 'L S 10/17/2019 18:50:48'!
 deposit: aTransaction
     deposits add: aTransaction! !
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:51:23'!
+!ReceptiveAccount methodsFor: 'transaction registration' stamp: 'L S 10/17/2019 18:51:23'!
 register: aTransaction
 
 	aTransaction registerOn: self
 ! !
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:53:13'!
-transactions 
-
-	^ (withdrawals, deposits)! !
-
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'L S 10/17/2019 18:51:01'!
+!ReceptiveAccount methodsFor: 'transaction registration' stamp: 'L S 10/17/2019 18:51:01'!
 withdraw: aTransaction
     withdrawals add: aTransaction! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'L S 10/17/2019 18:55:25'!
+!ReceptiveAccount methodsFor: 'holding information' stamp: 'L S 10/17/2019 18:55:25'!
 balance
       |accountBalance|
 	accountBalance := deposits sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 ].
 	accountBalance := accountBalance - (withdrawals sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 ]).
 	^accountBalance ! !
 
+!ReceptiveAccount methodsFor: 'holding information' stamp: 'C. L. 10/21/2019 14:34:20'!
+childrenAccounts
+    ^OrderedCollection with: self.! !
 
-!ReceptiveAccount methodsFor: 'testing' stamp: 'L S 10/17/2019 18:52:27'!
+!ReceptiveAccount methodsFor: 'holding information' stamp: 'L S 10/17/2019 18:52:27'!
 hasRegistered: aTransaction
 
 	^ (withdrawals includes: aTransaction) or: (deposits includes: aTransaction)
 ! !
 
+!ReceptiveAccount methodsFor: 'holding information' stamp: 'L S 10/17/2019 18:53:13'!
+transactions 
 
-!ReceptiveAccount methodsFor: 'deletable' stamp: 'L S 10/17/2019 20:44:59'!
-childrenAccounts
-    |children|
-    children := OrderedCollection new.
-    children add: self.
-    ^children! !
+	^ (withdrawals, deposits)! !
