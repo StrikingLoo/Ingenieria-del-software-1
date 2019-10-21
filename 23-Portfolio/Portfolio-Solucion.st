@@ -1,3 +1,35 @@
+!classDefinition: #AccountError category: #'Portfolio-Solucion'!
+Error subclass: #AccountError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+
+!classDefinition: #NegativeTransferError category: #'Portfolio-Solucion'!
+AccountError subclass: #NegativeTransferError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+
+!classDefinition: #SelfFinancingError category: #'Portfolio-Solucion'!
+AccountError subclass: #SelfFinancingError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+
+!classDefinition: #TransferExceedsBalanceError category: #'Portfolio-Solucion'!
+AccountError subclass: #TransferExceedsBalanceError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+
 !classDefinition: #PortfolioTest category: #'Portfolio-Solucion'!
 TestCase subclass: #PortfolioTest
 	instanceVariableNames: ''
@@ -304,8 +336,8 @@ test07AccountKnowsItsTransactions
 	self assert: (account1 transactions includes: deposit1).
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 19:59:35'!
-test08canMakeTrivialTransaction
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 20:31:50'!
+test08canMakeTrivialTransfer
 
 	| account1 account2 |
 	
@@ -314,11 +346,46 @@ test08canMakeTrivialTransaction
 	
 	Deposit register: 100 on: account1.
 	
-	 (AccountTransfer from: account1 to: account2 for: 1).
+	(AccountTransfer from: account1 to: account2 for: 1).
 	
 	self assert: 99 equals: account1 balance .
 	self assert: 1 equals: account2 balance .
 ! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 20:14:32'!
+test09cannotMakeNegativeTransfer
+
+	| account1 account2 |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	
+	self should: [ AccountTransfer from: account1 to: account2 for: (-1)] raise: NegativeTransferError .! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 20:23:20'!
+test10cannotMakeTransferToItself
+
+	| account1 |
+	
+	account1 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	
+	self should: [ AccountTransfer from: account1 to: account1 for: 1] raise: SelfFinancingError .! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 20:34:15'!
+test11TransferCannotExceedCurrentBalance
+
+	| account1 account2 |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	
+	self should: [ AccountTransfer from: account1 to: account2 for: 101] raise: TransferExceedsBalanceError .! !
 
 
 !classDefinition: #Account category: #'Portfolio-Solucion'!
@@ -628,69 +695,73 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
-!classDefinition: #TransferenceFrom category: #'Portfolio-Solucion'!
-AccountTransaction subclass: #TransferenceFrom
-	instanceVariableNames: 'value sender'
+!classDefinition: #TransferFrom category: #'Portfolio-Solucion'!
+AccountTransaction subclass: #TransferFrom
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Solucion'!
 
-!TransferenceFrom methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:33:10'!
-affectBalance: aBalance
-
-	^aBalance - value ! !
-
-!TransferenceFrom methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:48:28'!
+!TransferFrom methodsFor: 'initialization' stamp: 'L S 10/21/2019 20:28:01'!
 initializeFor: aValue
 
-	value := aValue .! !
+	value := aValue ! !
 
-!TransferenceFrom methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:34:03'!
+
+!TransferFrom methodsFor: 'value' stamp: 'L S 10/21/2019 20:28:01'!
 value
 
 	^ value! !
 
+
+!TransferFrom methodsFor: 'balance' stamp: 'L S 10/21/2019 20:28:01'!
+affectBalance: aBalance
+
+	^aBalance - value! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TransferenceFrom class' category: #'Portfolio-Solucion'!
-TransferenceFrom class
+!classDefinition: 'TransferFrom class' category: #'Portfolio-Solucion'!
+TransferFrom class
 	instanceVariableNames: ''!
 
-!TransferenceFrom class methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:58:45'!
+!TransferFrom class methodsFor: 'instance creation' stamp: 'L S 10/21/2019 20:28:01'!
 for: aValue
 
 	^ self new initializeFor: aValue ! !
 
 
-!classDefinition: #TransferenceTo category: #'Portfolio-Solucion'!
-AccountTransaction subclass: #TransferenceTo
-	instanceVariableNames: 'value receiver'
+!classDefinition: #TransferTo category: #'Portfolio-Solucion'!
+AccountTransaction subclass: #TransferTo
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Solucion'!
 
-!TransferenceTo methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:33:20'!
-affectBalance: aBalance
-
-	^aBalance + value ! !
-
-!TransferenceTo methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:48:40'!
+!TransferTo methodsFor: 'initialization' stamp: 'L S 10/21/2019 20:27:52'!
 initializeFor: aValue
 
-	value := aValue.! !
+	value := aValue ! !
 
-!TransferenceTo methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:34:06'!
+
+!TransferTo methodsFor: 'value' stamp: 'L S 10/21/2019 20:27:52'!
 value
 
 	^ value! !
 
+
+!TransferTo methodsFor: 'balance' stamp: 'L S 10/21/2019 20:27:52'!
+affectBalance: aBalance
+
+	^aBalance + value ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TransferenceTo class' category: #'Portfolio-Solucion'!
-TransferenceTo class
+!classDefinition: 'TransferTo class' category: #'Portfolio-Solucion'!
+TransferTo class
 	instanceVariableNames: ''!
 
-!TransferenceTo class methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:58:49'!
+!TransferTo class methodsFor: 'instance creation' stamp: 'L S 10/21/2019 20:27:52'!
 for: aValue
 
 	^ self new initializeFor: aValue ! !
@@ -739,18 +810,20 @@ Object subclass: #AccountTransfer
 	poolDictionaries: ''
 	category: 'Portfolio-Solucion'!
 
-!AccountTransfer methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:41:56'!
+!AccountTransfer methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 20:33:49'!
 initializeFrom: senderAccount to: receiverAccount for: anAmount
-
+    (anAmount <= 0) ifTrue: [NegativeTransferError signal].
+    (senderAccount = receiverAccount ) ifTrue: [SelfFinancingError signal].
+    (senderAccount balance < anAmount ) ifTrue: [TransferExceedsBalanceError signal].
     sender := senderAccount .
     receiver := receiverAccount .
     value := anAmount .! !
 
-!AccountTransfer methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:50:07'!
+!AccountTransfer methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 20:28:17'!
 send
    
-    TransferenceFrom register: value on: sender.
-    TransferenceTo register: value on: receiver.! !
+    TransferFrom register: value on: sender.
+    TransferTo register: value on: receiver.! !
 
 !AccountTransfer methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 19:38:33'!
 value
