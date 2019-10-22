@@ -387,6 +387,20 @@ test11TransferCannotExceedCurrentBalance
 	
 	self should: [ AccountTransfer from: account1 to: account2 for: 101] raise: TransferExceedsBalanceError .! !
 
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 21:12:13'!
+test12CanReportTransactions
+
+	| account1 reporter aReport |
+	
+	account1 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	Deposit register: 200 on: account1.
+		
+	reporter := AccountReporter for: account1 .
+	aReport := reporter report.
+	aReport! !
+
 
 !classDefinition: #Account category: #'Portfolio-Solucion'!
 Object subclass: #Account
@@ -624,6 +638,38 @@ addedTo: aPortfolio
 	! !
 
 
+!classDefinition: #AccountReporter category: #'Portfolio-Solucion'!
+Object subclass: #AccountReporter
+	instanceVariableNames: 'account'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+!AccountReporter methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:05:59'!
+initializeFor: anAccount
+   account := anAccount 
+   ! !
+
+!AccountReporter methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:08:11'!
+report
+    |finalReport accountTransactions|
+    accountTransactions := account transactions .
+    finalReport := ''.
+    accountTransactions collect: [:aTransaction | finalReport := finalReport , aTransaction descriptionString , '\n'].
+    ^finalReport ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'AccountReporter class' category: #'Portfolio-Solucion'!
+AccountReporter class
+	instanceVariableNames: ''!
+
+!AccountReporter class methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:09:52'!
+for: anAccount
+
+	^ self new initializeFor: anAccount ! !
+
+
 !classDefinition: #AccountTransaction category: #'Portfolio-Solucion'!
 Object subclass: #AccountTransaction
 	instanceVariableNames: ''
@@ -641,6 +687,11 @@ value
 affectBalance: aBalance
 
 	self subclassResponsibility ! !
+
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 20:59:15'!
+descriptionString
+    self subclassResponsibility .! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -683,6 +734,11 @@ affectBalance: aBalance
 
 	^aBalance + value ! !
 
+
+!Deposit methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:11:32'!
+descriptionString
+    ^'Deposit for ', ((self value) printString)! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Deposit class' category: #'Portfolio-Solucion'!
@@ -718,6 +774,11 @@ value
 affectBalance: aBalance
 
 	^aBalance - value! !
+
+
+!TransferFrom methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:11:26'!
+descriptionString
+    ^'Outbound transfer for ', ((self value) printString)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -755,6 +816,11 @@ affectBalance: aBalance
 
 	^aBalance + value ! !
 
+
+!TransferTo methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:11:08'!
+descriptionString
+    ^'Outbound transfer for ', ((self value) printString )! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'TransferTo class' category: #'Portfolio-Solucion'!
@@ -790,6 +856,11 @@ value
 affectBalance: aBalance
 
 	^aBalance - value! !
+
+
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:11:16'!
+descriptionString
+    ^'Withdrawal for ', ((self value) printString)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
