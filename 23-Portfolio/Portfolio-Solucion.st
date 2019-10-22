@@ -387,7 +387,7 @@ test11TransferCannotExceedCurrentBalance
 	
 	self should: [ AccountTransfer from: account1 to: account2 for: 101] raise: TransferExceedsBalanceError .! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 21:12:13'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'L S 10/21/2019 21:15:17'!
 test12CanReportTransactions
 
 	| account1 reporter aReport |
@@ -398,8 +398,7 @@ test12CanReportTransactions
 	Deposit register: 200 on: account1.
 		
 	reporter := AccountReporter for: account1 .
-	aReport := reporter report.
-	aReport! !
+	aReport := reporter report.! !
 
 
 !classDefinition: #Account category: #'Portfolio-Solucion'!
@@ -650,12 +649,13 @@ initializeFor: anAccount
    account := anAccount 
    ! !
 
-!AccountReporter methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:08:11'!
+!AccountReporter methodsFor: 'as yet unclassified' stamp: 'L S 10/21/2019 21:15:06'!
 report
     |finalReport accountTransactions|
     accountTransactions := account transactions .
     finalReport := ''.
     accountTransactions collect: [:aTransaction | finalReport := finalReport , aTransaction descriptionString , '\n'].
+    finalReport  := finalReport , ((account balance) asString) .
     ^finalReport ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
