@@ -1,29 +1,74 @@
-!classDefinition: #AccountTreeTest category: #'24-PortfolioTreePrinter'!
-TestCase subclass: #AccountTreeTest
+!classDefinition: #AccountTreeWithTransactionsTest category: #'24-PortfolioTreePrinter'!
+TestCase subclass: #AccountTreeWithTransactionsTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!AccountTreeTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:32:48'!
+!AccountTreeWithTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 15:00:50'!
 test01CanGenerateReportForReceptiveAccount
 	| anAccount anAccountReporter |
 	
 	anAccount := ReceptiveAccount new.
-	anAccountReporter := AccountTree with: anAccount.
+	anAccountReporter := AccountTreeWithTransactions with: anAccount.
+	
+	self assert: 'Cuenta anónima\nBalance = 0\n' equals: anAccountReporter report.! !
+
+!AccountTreeWithTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 15:02:52'!
+test02CanGenerateReportForEmptyPortfolio
+	| aPortfolio anAccountReporter reportText |
+	
+	reportText := 'Mi Portfolio\n',
+			'   Mi Cuenta\n',
+			'   Balance = 0\n',
+			'Balance = 0\n'.
+	
+	aPortfolio := Portfolio with: (ReceptiveAccount named: 'Mi Cuenta') named: 'Mi Portfolio'.
+	anAccountReporter := AccountTreeWithTransactions with: aPortfolio.
+	
+	self assert: reportText equals: anAccountReporter report.! !
+
+!AccountTreeWithTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 15:08:38'!
+test03CanGenerateReportForReceptiveAccountWithTransactions
+	| anAccount anAccountReporter reportText |
+	
+	reportText := 'Cuenta anónima\n',
+			'   Depósito por 50.\n',
+			'Balance = 50\n'.
+	
+	anAccount := ReceptiveAccount new.
+	Deposit register: 50 on: anAccount.
+	anAccountReporter := AccountTreeWithTransactions with: anAccount.
+	
+	self assert: reportText equals: anAccountReporter report.! !
+
+
+!classDefinition: #AccountTreeWithoutTransactionsTest category: #'24-PortfolioTreePrinter'!
+TestCase subclass: #AccountTreeWithoutTransactionsTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+!AccountTreeWithoutTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 14:53:58'!
+test01CanGenerateReportForReceptiveAccount
+	| anAccount anAccountReporter |
+	
+	anAccount := ReceptiveAccount new.
+	anAccountReporter := AccountTreeWithoutTransactions with: anAccount.
 	
 	self assert: 'Cuenta anónima\n' equals: anAccountReporter report.! !
 
-!AccountTreeTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:35:36'!
+!AccountTreeWithoutTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 14:56:20'!
 test02CanGenerateReportForEmptyPortfolio
 	| aPortfolio anAccountReporter |
 	
 	aPortfolio := Portfolio with: (ReceptiveAccount named: 'Mi Cuenta') named: 'Mi Portfolio'.
-	anAccountReporter := AccountTree with: aPortfolio.
+	anAccountReporter := AccountTreeWithoutTransactions with: aPortfolio.
 	
 	self assert: 'Mi Portfolio\n   Mi Cuenta\n' equals: anAccountReporter report.! !
 
-!AccountTreeTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 19:22:59'!
+!AccountTreeWithoutTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 14:56:27'!
 test03CanGenerateReportForTwoLevelNesting
 	| juanaPortfolio martaPortfolio anAccountReporter reportText |
 	
@@ -34,9 +79,20 @@ test03CanGenerateReportForTwoLevelNesting
 	
 	juanaPortfolio := Portfolio with: (ReceptiveAccount named: 'Mi cuenta') named: 'Juana'.
 	martaPortfolio := Portfolio with: juanaPortfolio with: (ReceptiveAccount named: 'Mica') named: 'Marta' .
-	anAccountReporter := AccountTree with: martaPortfolio .
+	anAccountReporter := AccountTreeWithoutTransactions with: martaPortfolio .
 	
 	self assert: reportText equals: anAccountReporter report.! !
+
+!AccountTreeWithoutTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 14:59:56'!
+test04ReportDoesNotShowTransactions
+	| anAccount aPortfolio anAccountReporter |
+	
+	anAccount := ReceptiveAccount named: 'Mi Cuenta'.
+	aPortfolio := Portfolio with: anAccount named: 'Mi Portfolio'.
+	Deposit register: 50 on: anAccount.
+	anAccountReporter := AccountTreeWithoutTransactions with: aPortfolio.
+	
+	self assert: 'Mi Portfolio\n   Mi Cuenta\n' equals: anAccountReporter report.! !
 
 
 !classDefinition: #PortfolioTest category: #'24-PortfolioTreePrinter'!
@@ -254,6 +310,14 @@ test15PortfolioCanNotIncludeAnyOfTheComposedAccountOfPortfolioToAdd
 			self assert: Portfolio canNotAddAccountErrorMessage equals: anError messageText.
 			self assert: portfolioToModify accountsIsEmpty ]! !
 
+
+!PortfolioTest methodsFor: 'utils' stamp: 'L S 10/17/2019 19:17:18'!
+accountWithBalance: aBalance
+    |anAccount|
+    anAccount := ReceptiveAccount new.
+    Deposit register: 100 on: anAccount .
+    ^anAccount ! !
+
 
 !classDefinition: #ReceptiveAccountTest category: #'24-PortfolioTreePrinter'!
 TestCase subclass: #ReceptiveAccountTest
@@ -402,7 +466,7 @@ TestCase subclass: #SimpleBalanceReporterTest
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test01CanGenerateReportForEmptyReceptiveAccount
 	| anAccount anAccountReporter |
 	
@@ -411,7 +475,7 @@ test01CanGenerateReportForEmptyReceptiveAccount
 	
 	self assert: 'Balance = 0\n' equals: anAccountReporter report.! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test02CanGenerateReportForReceptiveAccountWithDeposit
 	| anAccount anAccountReporter |
 	
@@ -421,7 +485,7 @@ test02CanGenerateReportForReceptiveAccountWithDeposit
 	
 	self assert: 'Depósito por 10.\nBalance = 10\n' equals: anAccountReporter report.! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test03CanGenerateReportForReceptiveAccountWithDepositAndWithdraw
 	| anAccount anAccountReporter |
 	
@@ -432,7 +496,7 @@ test03CanGenerateReportForReceptiveAccountWithDepositAndWithdraw
 	
 	self assert: 'Depósito por 50.\nExtracción por 10.\nBalance = 40\n' equals: anAccountReporter report.! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test04CanGenerateReportForEmptyPortfolio
 	| aPortfolio anAccountReporter |
 	
@@ -441,7 +505,7 @@ test04CanGenerateReportForEmptyPortfolio
 	
 	self assert: 'Balance = 0\n' equals: anAccountReporter report.! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test05reportForPortfolioWithAccountIsCoherentWithReceptiveAccountReport
 	| aPortfolio anAccount accountReporter portfolioReporter |
 	
@@ -455,7 +519,7 @@ test05reportForPortfolioWithAccountIsCoherentWithReceptiveAccountReport
 	
 	self assert: (accountReporter report) equals: (portfolioReporter report).! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test06correctReportForPortfolioWithMoreThan1Account
 	| aPortfolio account1 account2 portfolioReporter |
 	
@@ -472,7 +536,7 @@ test06correctReportForPortfolioWithMoreThan1Account
 	
 	self assert: 'Depósito por 50.\nDepósito por 40.\nBalance = 90\n' equals: (portfolioReporter report).! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test07CanGenerateReportsForReceptiveAccountWithOutgoingTransfer
 	| sendingAccount receivingAccount anAccountReporter |
 	
@@ -485,7 +549,7 @@ test07CanGenerateReportsForReceptiveAccountWithOutgoingTransfer
 	
 	self assert: 'Depósito por 50.\nSalida por transferencia de 10.\nBalance = 40\n' equals: anAccountReporter report.! !
 
-!SimpleBalanceReporterTest methodsFor: 'as yet unclassified' stamp: 'C. L. 10/27/2019 18:28:27'!
+!SimpleBalanceReporterTest methodsFor: 'testing' stamp: 'C. L. 10/27/2019 18:28:27'!
 test08CanGenerateReportsForReceptiveAccountWithIncomingTransfer
 	| sendingAccount receivingAccount anAccountReporter |
 	
@@ -580,6 +644,21 @@ Account subclass: #Portfolio
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
+!Portfolio methodsFor: 'initialization' stamp: 'HAW 5/25/2019 12:03:18'!
+initialize
+
+	accounts := OrderedCollection new.
+	parents := OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'holding information' stamp: 'L S 10/17/2019 20:42:19'!
+childrenAccounts
+    |successors|
+    successors := OrderedCollection new.
+    holdees collect: [:aHoldee | successors addAll: (aHoldee childrenAccounts)].
+    ^successors! !
+
+
 !Portfolio methodsFor: 'accounts management' stamp: 'HAW 5/25/2019 11:49:20'!
 accountsIncludes: anAccount
 
@@ -613,13 +692,6 @@ rootParents
 	self addRootParentsTo: rootParents.
 	
 	^ rootParents! !
-
-
-!Portfolio methodsFor: 'initialization' stamp: 'HAW 5/25/2019 12:03:18'!
-initialize
-
-	accounts := OrderedCollection new.
-	parents := OrderedCollection new.! !
 
 
 !Portfolio methodsFor: 'balance' stamp: 'HAW 5/25/2019 11:19:36'!
@@ -753,6 +825,20 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
+!ReceptiveAccount methodsFor: 'transaction registration' stamp: 'L S 10/17/2019 18:50:48'!
+deposit: aTransaction
+    deposits add: aTransaction! !
+
+!ReceptiveAccount methodsFor: 'transaction registration' stamp: 'L S 10/17/2019 18:51:01'!
+withdraw: aTransaction
+    withdrawals add: aTransaction! !
+
+
+!ReceptiveAccount methodsFor: 'holding information' stamp: 'C. L. 10/21/2019 14:34:20'!
+childrenAccounts
+    ^OrderedCollection with: self.! !
+
+
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HAW 5/25/2019 11:38:52'!
 addTransactionsTo: aCollectionOfTransactions
 
@@ -820,10 +906,6 @@ initializeWith: anAccount
 	account := anAccount.! !
 
 
-!AccountReporter methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 18:00:18'!
-balanceReport
-	^'Balance = ', (account balance asString), '\n'.! !
-
 !AccountReporter methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 20:04:13'!
 reportBalance
 	^self subclassResponsibility ! !
@@ -867,52 +949,76 @@ with: anAccount
 
 !classDefinition: #AccountTree category: #'24-PortfolioTreePrinter'!
 AccountReporter subclass: #AccountTree
-	instanceVariableNames: 'initialSpaces'
+	instanceVariableNames: 'initialSpaces deltaSpaces'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 19:02:25'!
-addSpaces: aLine
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:12:35'!
+addSpacesTo: aLine withSpaces: aNumberOfSpaces
 	| spacesAsString |
 	spacesAsString := ''.
-	1 to: initialSpaces do: [:index | spacesAsString := spacesAsString, ' '].
+	1 to: aNumberOfSpaces do: [:index | spacesAsString := spacesAsString, ' '].
 	^spacesAsString, aLine.! !
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 20:03:52'!
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:13:07'!
+addSpacesToAccountInfo: aLine
+	^self addSpacesTo: aLine withSpaces: initialSpaces.! !
+
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:13:24'!
+addSpacesToTransaction: aLine
+	^self addSpacesTo: aLine withSpaces: (initialSpaces + deltaSpaces).! !
+
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:55:59'!
 report
-	| childrenReports |
-	childrenReports := ''.
-	account onAccountsDo: [ :aChild | childrenReports := childrenReports, (aChild handleReport: self)].
-	^(self reportName), childrenReports, (self reportBalance).! !
+	^account handleReport: self.! !
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 19:51:50'!
-reportAccount: anAccount
-	| aReporter |
-	aReporter := (self class) with: anAccount withSpaces: (initialSpaces + 3).
-	^aReporter report.! !
-
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 20:05:12'!
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:43:53'!
 reportBalance
-	^''! !
+	self subclassResponsibility ! !
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 19:35:52'!
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:49:27'!
+reportChildrenAccounts: aPortfolio
+	| finalReport |
+	finalReport := ''.
+	aPortfolio onAccountsDo: [ :aChild |
+		| aReporter |
+		aReporter := (self class) with: aChild withSpaces: (initialSpaces + deltaSpaces).
+		finalReport := finalReport, (aReporter report).
+		].
+	^finalReport.! !
+
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:11:17'!
 reportName
-	^ (self addSpaces: (account accountName, '\n')).! !
+	^ (self addSpacesToAccountInfo: (account accountName, '\n')).! !
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 19:52:14'!
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:42:37'!
 reportPortfolio: aPortfolio
-	^(self reportAccount: aPortfolio).! !
+	^(self reportName), (self reportChildrenAccounts: aPortfolio), (self reportBalance).! !
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 19:53:43'!
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:43:10'!
 reportReceptiveAccount: aReceptiveAccount
-	^(self reportAccount: aReceptiveAccount).! !
+	^(self reportName), (self reportTransactions: aReceptiveAccount), (self reportBalance).! !
+
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:58:19'!
+reportTransaction: aTransaction
+	self subclassResponsibility ! !
+
+!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:52:14'!
+reportTransactions: aReceptiveAccount
+	| finalReport |
+	finalReport := ''.
+	aReceptiveAccount transactionsDo: [ :aTransaction |
+		finalReport := finalReport, (self reportTransaction: aTransaction).
+		].
+	^finalReport.! !
 
 
-!AccountTree methodsFor: 'initialization' stamp: 'C. L. 10/27/2019 18:02:29'!
+!AccountTree methodsFor: 'initialization' stamp: 'C. L. 10/28/2019 14:50:13'!
 initializeWithAccount: anAccount withSpaces: anAmountOfSpaces
 	super initializeWith: anAccount.
-	initialSpaces := anAmountOfSpaces .! !
+	initialSpaces := anAmountOfSpaces .
+	deltaSpaces := 3.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -927,6 +1033,38 @@ with: anAccount
 !AccountTree class methodsFor: 'instance creation' stamp: 'C. L. 10/27/2019 18:09:39'!
 with: anAccount withSpaces: anAmountOfSpaces
 	^super new initializeWithAccount: anAccount withSpaces: anAmountOfSpaces .! !
+
+
+!classDefinition: #AccountTreeWithTransactions category: #'24-PortfolioTreePrinter'!
+AccountTree subclass: #AccountTreeWithTransactions
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+!AccountTreeWithTransactions methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:11:17'!
+reportBalance
+	^self addSpacesToAccountInfo: ('Balance = ', (account balance asString), '\n').! !
+
+!AccountTreeWithTransactions methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:13:50'!
+reportTransaction: aTransaction
+	^self addSpacesToTransaction: (aTransaction handleReportFor: self).! !
+
+
+!classDefinition: #AccountTreeWithoutTransactions category: #'24-PortfolioTreePrinter'!
+AccountTree subclass: #AccountTreeWithoutTransactions
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+!AccountTreeWithoutTransactions methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:44:21'!
+reportBalance
+	^''! !
+
+!AccountTreeWithoutTransactions methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:57:49'!
+reportTransaction: aTransaction
+	^''! !
 
 
 !classDefinition: #SimpleBalanceReporter category: #'24-PortfolioTreePrinter'!
@@ -973,10 +1111,19 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
+!AccountTransaction methodsFor: 'value' stamp: 'C. L. 10/21/2019 14:17:16'!
+registerOn: anAccount
+    self subclassResponsibility ! !
+
 !AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
 value 
 
 	self subclassResponsibility ! !
+
+
+!AccountTransaction methodsFor: 'initialization' stamp: 'C. L. 10/21/2019 14:17:29'!
+initializeFor: aValue
+	value := aValue ! !
 
 
 !AccountTransaction methodsFor: 'balance' stamp: 'HAW 5/25/2019 11:25:39'!
@@ -1013,16 +1160,21 @@ AccountTransaction subclass: #Deposit
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!Deposit methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:45'!
-initializeFor: aValue
-
-	value := aValue ! !
-
+!Deposit methodsFor: 'value' stamp: 'L S 10/17/2019 18:49:00'!
+registerOn: anAccount
+    
+    anAccount deposit: self! !
 
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
 	^ value! !
+
+
+!Deposit methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:45'!
+initializeFor: aValue
+
+	value := aValue ! !
 
 
 !Deposit methodsFor: 'report handler' stamp: 'C. L. 10/27/2019 17:18:50'!
@@ -1146,16 +1298,21 @@ AccountTransaction subclass: #Withdraw
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
-initializeFor: aValue
-
-	value := aValue ! !
-
+!Withdraw methodsFor: 'value' stamp: 'L S 10/17/2019 18:48:33'!
+registerOn: anAccount
+    
+    anAccount withdraw: self! !
 
 !Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
 value
 
 	^ value! !
+
+
+!Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
+initializeFor: aValue
+
+	value := aValue ! !
 
 
 !Withdraw methodsFor: 'balance' stamp: 'HAW 5/25/2019 11:25:15'!
