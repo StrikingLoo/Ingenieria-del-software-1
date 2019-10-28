@@ -42,6 +42,23 @@ test03CanGenerateReportForReceptiveAccountWithTransactions
 	
 	self assert: reportText equals: anAccountReporter report.! !
 
+!AccountTreeWithTransactionsTest methodsFor: 'testing' stamp: 'C. L. 10/28/2019 15:50:54'!
+test04CanGenerateReportForPortfolioWithTransactions
+	| anAccount aPortfolio anAccountReporter reportText |
+	
+	reportText := 'Portfolio de Pepita\n',
+			'   Cuenta anónima\n',
+			'      Depósito por 50.\n',
+			'   Balance = 50\n',
+			'Balance = 50\n'.
+	
+	anAccount := ReceptiveAccount new.
+	Deposit register: 50 on: anAccount.
+	aPortfolio := Portfolio with: anAccount named: 'Portfolio de Pepita'.
+	anAccountReporter := AccountTreeWithTransactions with: aPortfolio.
+	
+	self assert: reportText equals: anAccountReporter report.! !
+
 
 !classDefinition: #AccountTreeWithoutTransactionsTest category: #'24-PortfolioTreePrinter'!
 TestCase subclass: #AccountTreeWithoutTransactionsTest
@@ -954,6 +971,26 @@ AccountReporter subclass: #AccountTree
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
+!AccountTree methodsFor: 'reporting - accounts' stamp: 'C. L. 10/28/2019 14:49:27'!
+reportChildrenAccounts: aPortfolio
+	| finalReport |
+	finalReport := ''.
+	aPortfolio onAccountsDo: [ :aChild |
+		| aReporter |
+		aReporter := (self class) with: aChild withSpaces: (initialSpaces + deltaSpaces).
+		finalReport := finalReport, (aReporter report).
+		].
+	^finalReport.! !
+
+!AccountTree methodsFor: 'reporting - accounts' stamp: 'C. L. 10/28/2019 14:42:37'!
+reportPortfolio: aPortfolio
+	^(self reportName), (self reportChildrenAccounts: aPortfolio), (self reportBalance).! !
+
+!AccountTree methodsFor: 'reporting - accounts' stamp: 'C. L. 10/28/2019 14:43:10'!
+reportReceptiveAccount: aReceptiveAccount
+	^(self reportName), (self reportTransactions: aReceptiveAccount), (self reportBalance).! !
+
+
 !AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:12:35'!
 addSpacesTo: aLine withSpaces: aNumberOfSpaces
 	| spacesAsString |
@@ -977,28 +1014,9 @@ report
 reportBalance
 	self subclassResponsibility ! !
 
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:49:27'!
-reportChildrenAccounts: aPortfolio
-	| finalReport |
-	finalReport := ''.
-	aPortfolio onAccountsDo: [ :aChild |
-		| aReporter |
-		aReporter := (self class) with: aChild withSpaces: (initialSpaces + deltaSpaces).
-		finalReport := finalReport, (aReporter report).
-		].
-	^finalReport.! !
-
 !AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:11:17'!
 reportName
 	^ (self addSpacesToAccountInfo: (account accountName, '\n')).! !
-
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:42:37'!
-reportPortfolio: aPortfolio
-	^(self reportName), (self reportChildrenAccounts: aPortfolio), (self reportBalance).! !
-
-!AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:43:10'!
-reportReceptiveAccount: aReceptiveAccount
-	^(self reportName), (self reportTransactions: aReceptiveAccount), (self reportBalance).! !
 
 !AccountTree methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 14:58:19'!
 reportTransaction: aTransaction
@@ -1074,24 +1092,25 @@ AccountReporter subclass: #SimpleBalanceReporter
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!SimpleBalanceReporter methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 20:09:03'!
+!SimpleBalanceReporter methodsFor: 'reporting' stamp: 'C. L. 10/28/2019 15:55:54'!
 report
-	| childrenReports childrenReportAsString |
-	
-	childrenReports := (account transactionsDo: [:aTransaction | aTransaction handleReportFor: self]).
+	| addTransactionsToReportBlock childrenReportAsString |
 	
 	childrenReportAsString := ''.
-	childrenReports do: [:aChildReport | childrenReportAsString := childrenReportAsString, aChildReport.].
+	
+	addTransactionsToReportBlock := [:aTransaction |
+		| reportForTransaction |
+		reportForTransaction := aTransaction handleReportFor: self.
+		childrenReportAsString := childrenReportAsString, reportForTransaction.
+		].
+	
+	account transactionsDo: addTransactionsToReportBlock.
 	
 	^childrenReportAsString, self reportBalance.! !
 
 !SimpleBalanceReporter methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 20:09:15'!
 reportBalance
 	^'Balance = ', (account balance asString), '\n'.! !
-
-!SimpleBalanceReporter methodsFor: 'reporting' stamp: 'C. L. 10/27/2019 20:09:29'!
-reportName
-	^''.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
