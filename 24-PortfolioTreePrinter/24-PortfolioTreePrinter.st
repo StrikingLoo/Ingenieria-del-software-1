@@ -1,3 +1,35 @@
+!classDefinition: #TransferError category: #'24-PortfolioTreePrinter'!
+Error subclass: #TransferError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+
+!classDefinition: #NegativeTransferError category: #'24-PortfolioTreePrinter'!
+TransferError subclass: #NegativeTransferError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+
+!classDefinition: #TransferExceedsBalanceError category: #'24-PortfolioTreePrinter'!
+TransferError subclass: #TransferExceedsBalanceError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+
+!classDefinition: #TransferToSameAccountError category: #'24-PortfolioTreePrinter'!
+TransferError subclass: #TransferToSameAccountError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
+
+
 !classDefinition: #AccountTreeWithTransactionsTest category: #'24-PortfolioTreePrinter'!
 TestCase subclass: #AccountTreeWithTransactionsTest
 	instanceVariableNames: ''
@@ -119,12 +151,12 @@ TestCase subclass: #PortfolioTest
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:16:26'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:16:26'!
 test01BalanceOfPortfolioWithoutAccountsIsZero
 
 	self assert: 0 equals: Portfolio new balance! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:17:51'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:17:51'!
 test02BalanceOfPortfolioWithOneAccountIsAccountBalance
 
 	| account portfolio |
@@ -135,7 +167,7 @@ test02BalanceOfPortfolioWithOneAccountIsAccountBalance
 	
 	self assert: account balance equals: portfolio balance! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:23:25'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:23:25'!
 test03BalanceOfPortfolioIsCalculatedRecursivelyOnPortfolios
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortofolio |
@@ -150,12 +182,12 @@ test03BalanceOfPortfolioIsCalculatedRecursivelyOnPortfolios
 	
 	self assert: (composedPortfolioAccount balance + simplePortfolio balance) equals: composedPortofolio balance! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:43:15'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:43:15'!
 test04PortfolioWithoutAccountsHasNoRegisteredTransaction
 
 	self deny: (Portfolio new hasRegistered: (Deposit for: 100))! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:43:11'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:43:11'!
 test05PortfolioHasRegisteredItsAccountsTransactions
 
 	| account portfolio deposit |
@@ -166,7 +198,7 @@ test05PortfolioHasRegisteredItsAccountsTransactions
 	
 	self assert: (portfolio hasRegistered: deposit)! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:06'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:58:06'!
 test06PortfolioLooksForRegisteredTransactionsRecursively
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortfolio composedPortfolioAccountWithdraw simplePortfolioAccountDeposit |
@@ -182,12 +214,12 @@ test06PortfolioLooksForRegisteredTransactionsRecursively
 	self assert: (composedPortfolio hasRegistered: simplePortfolioAccountDeposit).
 	self assert: (composedPortfolio hasRegistered: composedPortfolioAccountWithdraw)! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:10'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:58:10'!
 test07PortfolioHasNoTransactionWhenHasNoAccounts
 
 	self assert: Portfolio new transactions isEmpty! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:15'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:58:15'!
 test08PortfolioTransasctionsIncludesAllItsAccountsTransactions
 
 	| account portfolio accountDeposit anotherAccount portfolioTransactions anotherAccountWithdraw |
@@ -204,7 +236,7 @@ test08PortfolioTransasctionsIncludesAllItsAccountsTransactions
 	self assert: (portfolioTransactions includes: accountDeposit).
 	self assert: (portfolioTransactions includes: anotherAccountWithdraw)! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:20'!
+!PortfolioTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/25/2019 11:58:20'!
 test09PortfolioTransactionsAreCalculatedRecursively
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortfolio composedPortfolioAccountWithdraw simplePortfolioAccountDeposit composedPortfolioTransactions |
@@ -222,7 +254,16 @@ test09PortfolioTransactionsAreCalculatedRecursively
 	self assert: (composedPortfolioTransactions includes: simplePortfolioAccountDeposit).
 	self assert: (composedPortfolioTransactions includes: composedPortfolioAccountWithdraw)! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:24'!
+
+!PortfolioTest methodsFor: 'utils' stamp: 'L S 10/17/2019 19:17:18'!
+accountWithBalance: aBalance
+    |anAccount|
+    anAccount := ReceptiveAccount new.
+    Deposit register: 100 on: anAccount .
+    ^anAccount ! !
+
+
+!PortfolioTest methodsFor: 'tree structure tests' stamp: 'HAW 5/25/2019 11:58:24'!
 test10PortfolioCanNotIncludeTheSameAccountMoreThanOnce
 
 	| account portfolio |
@@ -238,7 +279,7 @@ test10PortfolioCanNotIncludeTheSameAccountMoreThanOnce
 			self assert: 1 equals: portfolio accountsSize.
 			self assert: (portfolio accountsIncludes: account) ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:28'!
+!PortfolioTest methodsFor: 'tree structure tests' stamp: 'HAW 5/25/2019 11:58:28'!
 test11PortfolioCanNotIncludeAccountOfItsPortfolios
 
 	| account simplePortfolio composedPortfolio |
@@ -255,7 +296,7 @@ test11PortfolioCanNotIncludeAccountOfItsPortfolios
 			self assert: 1 equals: composedPortfolio accountsSize.
 			self assert: (composedPortfolio accountsIncludes: simplePortfolio) ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 11:58:32'!
+!PortfolioTest methodsFor: 'tree structure tests' stamp: 'HAW 5/25/2019 11:58:32'!
 test12PortfolioCanNotIncludeItself
 
 	| account simplePortfolio |
@@ -271,7 +312,7 @@ test12PortfolioCanNotIncludeItself
 			self assert: 1 equals: simplePortfolio accountsSize.
 			self assert: (simplePortfolio accountsIncludes: account) ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 12:01:51'!
+!PortfolioTest methodsFor: 'tree structure tests' stamp: 'HAW 5/25/2019 12:01:51'!
 test13ComposedPortfolioCanNotHaveParentPortfolioAccount
 
 	| account simplePortfolio composedPortfolio |
@@ -288,7 +329,7 @@ test13ComposedPortfolioCanNotHaveParentPortfolioAccount
 			self assert: Portfolio canNotAddAccountErrorMessage equals: anError messageText.
 			self assert: simplePortfolio accountsIsEmpty ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/25/2019 12:12:16'!
+!PortfolioTest methodsFor: 'tree structure tests' stamp: 'HAW 5/25/2019 12:12:16'!
 test14ComposedPortfolioCanNotHaveAccountOfAnyRootParentRecursively
 
 	| account leftParentPortfolio leftRootParentPortfolio portfolio rightParentPortfolio rightRootParentPortfolio |
@@ -310,7 +351,7 @@ test14ComposedPortfolioCanNotHaveAccountOfAnyRootParentRecursively
 			self assert: Portfolio canNotAddAccountErrorMessage equals: anError messageText.
 			self assert: portfolio accountsIsEmpty ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/29/2019 16:31:18'!
+!PortfolioTest methodsFor: 'tree structure tests' stamp: 'HAW 5/29/2019 16:31:18'!
 test15PortfolioCanNotIncludeAnyOfTheComposedAccountOfPortfolioToAdd
 
 	| portfolioToAdd portfolioToModify rootPortfolio sharedAccount |
@@ -328,12 +369,12 @@ test15PortfolioCanNotIncludeAnyOfTheComposedAccountOfPortfolioToAdd
 			self assert: portfolioToModify accountsIsEmpty ]! !
 
 
-!PortfolioTest methodsFor: 'utils' stamp: 'L S 10/17/2019 19:17:18'!
-accountWithBalance: aBalance
-    |anAccount|
-    anAccount := ReceptiveAccount new.
-    Deposit register: 100 on: anAccount .
-    ^anAccount ! !
+!PortfolioTest methodsFor: 'account name tests' stamp: 'C. L. 10/28/2019 16:16:26'!
+test16CanCreateNamedPortfolio
+	| aPortfolio |
+	aPortfolio := Portfolio named: 'Portfolio de pepe'.
+	
+	self assert: aPortfolio accountName equals: 'Portfolio de pepe'.! !
 
 
 !classDefinition: #ReceptiveAccountTest category: #'24-PortfolioTreePrinter'!
@@ -343,90 +384,7 @@ TestCase subclass: #ReceptiveAccountTest
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:19:48'!
-test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
-
-	| account |
-	
-	account := ReceptiveAccount new.
-
-	self assert: 0 equals: account balance .
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:19:54'!
-test02DepositIncreasesBalanceOnTransactionValue 
-
-	| account |
-	
-	account := ReceptiveAccount  new.
-	Deposit register: 100 on: account.
-		
-	self assert: 100 equals: account balance .
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:20:02'!
-test03WithdrawDecreasesBalanceOnTransactionValue 
-
-	| account |
-	
-	account := ReceptiveAccount new.
-	Deposit register: 100 on: account.
-	Withdraw register: 50 on: account.
-		
-	self assert: 50 equals: account balance .
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:20:32'!
-test04WithdrawValueMustBePositive 
-
-	| account withdrawValue |
-	
-	account := ReceptiveAccount new.
-	withdrawValue := 50.
-	
-	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: account) value
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:20:46'!
-test05ReceptiveAccountKnowsRegisteredTransactions 
-
-	| account deposit withdraw |
-	
-	account := ReceptiveAccount new.
-	deposit := Deposit register: 100 on: account.
-	withdraw := Withdraw register: 50 on: account.
-		
-	self assert: (account hasRegistered: deposit).
-	self assert: (account hasRegistered: withdraw).
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:20:54'!
-test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
-
-	| account deposit withdraw |
-	
-	account := ReceptiveAccount new.
-	deposit :=  Deposit for: 100.
-	withdraw := Withdraw for: 50.
-		
-	self deny: (account hasRegistered: deposit).
-	self deny: (account hasRegistered:withdraw).
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'HAW 5/23/2019 15:21:24'!
-test07AccountKnowsItsTransactions 
-
-	| account1 deposit1 |
-	
-	account1 := ReceptiveAccount new.
-	
-	deposit1 := Deposit register: 100 on: account1.
-		
-	self assert: 1 equals: account1 transactions size .
-	self assert: (account1 transactions includes: deposit1).
-! !
-
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'C. L. 10/27/2019 13:56:42'!
+!ReceptiveAccountTest methodsFor: 'transfer tests' stamp: 'C. L. 10/27/2019 13:56:42'!
 test08TransferMovesMoneyBetweenAccounts 
 
 	| sendingAccount receivingAccount |
@@ -440,7 +398,7 @@ test08TransferMovesMoneyBetweenAccounts
 	self assert: 70 equals: sendingAccount balance .
 	self assert: 30 equals: receivingAccount balance .! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'C. L. 10/27/2019 15:27:56'!
+!ReceptiveAccountTest methodsFor: 'transfer tests' stamp: 'C. L. 10/27/2019 15:27:56'!
 test09CanAccessFromTransferToCorrespondingAccountTransactions
 
 	| sendingAccount receivingAccount transfer |
@@ -454,26 +412,139 @@ test09CanAccessFromTransferToCorrespondingAccountTransactions
 	self assert: (transfer sendingTransaction) transfer equals: transfer.
 	self assert: (transfer receivingTransaction) transfer equals: transfer.! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'C. L. 10/27/2019 17:51:38'!
-test10CanCreateNamedReceptiveAccount
+!ReceptiveAccountTest methodsFor: 'transfer tests' stamp: 'C. L. 10/28/2019 16:29:36'!
+test10cannotMakeNegativeTransfer
+
+	| account1 account2 |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	
+	self should: [ TransferBetweenAccounts register: (-1) from: account1 to: account2] raise: NegativeTransferError .! !
+
+!ReceptiveAccountTest methodsFor: 'transfer tests' stamp: 'C. L. 10/28/2019 16:29:28'!
+test11cannotMakeTransferToItself
+
+	| account1 |
+	
+	account1 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	
+	self should: [ TransferBetweenAccounts register: 1 from: account1 to: account1] raise: TransferToSameAccountError .! !
+
+!ReceptiveAccountTest methodsFor: 'transfer tests' stamp: 'C. L. 10/28/2019 16:29:20'!
+test12TransferCannotExceedCurrentBalance
+
+	| account1 account2 |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	
+	Deposit register: 100 on: account1.
+	
+	self should: [ TransferBetweenAccounts register: 101 from: account1 to: account2] raise: TransferExceedsBalanceError .! !
+
+
+!ReceptiveAccountTest methodsFor: 'account name tests' stamp: 'C. L. 10/28/2019 16:26:08'!
+test13CanCreateNamedReceptiveAccount
 	| anAccount |
 	anAccount := ReceptiveAccount named: 'Cuenta de pepe'.
 	
 	self assert: anAccount accountName equals: 'Cuenta de pepe'.! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'C. L. 10/27/2019 17:49:56'!
-test11unnamedAccountHasDefaultName
+!ReceptiveAccountTest methodsFor: 'account name tests' stamp: 'C. L. 10/28/2019 16:26:13'!
+test14unnamedAccountHasDefaultName
 	| anAccount |
 	anAccount := ReceptiveAccount new.
 	
 	self assert: anAccount accountName equals: 'Cuenta anónima'.! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'C. L. 10/27/2019 17:52:42'!
-test12CanCreateNamedPortfolio
-	| aPortfolio |
-	aPortfolio := Portfolio named: 'Portfolio de pepe'.
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:19:48'!
+test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
+
+	| account |
 	
-	self assert: aPortfolio accountName equals: 'Portfolio de pepe'.! !
+	account := ReceptiveAccount new.
+
+	self assert: 0 equals: account balance .
+! !
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:19:54'!
+test02DepositIncreasesBalanceOnTransactionValue 
+
+	| account |
+	
+	account := ReceptiveAccount  new.
+	Deposit register: 100 on: account.
+		
+	self assert: 100 equals: account balance .
+! !
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:20:02'!
+test03WithdrawDecreasesBalanceOnTransactionValue 
+
+	| account |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	Withdraw register: 50 on: account.
+		
+	self assert: 50 equals: account balance .
+! !
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:20:32'!
+test04WithdrawValueMustBePositive 
+
+	| account withdrawValue |
+	
+	account := ReceptiveAccount new.
+	withdrawValue := 50.
+	
+	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: account) value
+! !
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:20:46'!
+test05ReceptiveAccountKnowsRegisteredTransactions 
+
+	| account deposit withdraw |
+	
+	account := ReceptiveAccount new.
+	deposit := Deposit register: 100 on: account.
+	withdraw := Withdraw register: 50 on: account.
+		
+	self assert: (account hasRegistered: deposit).
+	self assert: (account hasRegistered: withdraw).
+! !
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:20:54'!
+test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
+
+	| account deposit withdraw |
+	
+	account := ReceptiveAccount new.
+	deposit :=  Deposit for: 100.
+	withdraw := Withdraw for: 50.
+		
+	self deny: (account hasRegistered: deposit).
+	self deny: (account hasRegistered:withdraw).
+! !
+
+!ReceptiveAccountTest methodsFor: 'balance and transactions tests' stamp: 'HAW 5/23/2019 15:21:24'!
+test07AccountKnowsItsTransactions 
+
+	| account1 deposit1 |
+	
+	account1 := ReceptiveAccount new.
+	
+	deposit1 := Deposit register: 100 on: account1.
+		
+	self assert: 1 equals: account1 transactions size .
+	self assert: (account1 transactions includes: deposit1).
+! !
 
 
 !classDefinition: #SimpleBalanceReporterTest category: #'24-PortfolioTreePrinter'!
@@ -1219,28 +1290,46 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
-!classDefinition: #TransferReceived category: #'24-PortfolioTreePrinter'!
-AccountTransaction subclass: #TransferReceived
+!classDefinition: #TransferTransaction category: #'24-PortfolioTreePrinter'!
+AccountTransaction subclass: #TransferTransaction
 	instanceVariableNames: 'transfer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
 
-!TransferReceived methodsFor: 'value' stamp: 'C. L. 10/27/2019 15:13:09'!
+!TransferTransaction methodsFor: 'testing' stamp: 'C. L. 10/28/2019 16:36:34'!
+transfer
+	^transfer! !
+
+
+!TransferTransaction methodsFor: 'value' stamp: 'C. L. 10/28/2019 16:36:42'!
 value
 	^(transfer value).! !
 
 
-!TransferReceived methodsFor: 'initialization' stamp: 'C. L. 10/27/2019 14:13:21'!
+!TransferTransaction methodsFor: 'initialization' stamp: 'C. L. 10/28/2019 16:36:49'!
 initializeFor: aTransfer
 
 	transfer := aTransfer ! !
 
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!TransferReceived methodsFor: 'testing' stamp: 'C. L. 10/27/2019 15:28:19'!
-transfer
-	^transfer! !
+!classDefinition: 'TransferTransaction class' category: #'24-PortfolioTreePrinter'!
+TransferTransaction class
+	instanceVariableNames: ''!
 
+!TransferTransaction class methodsFor: 'instance creation' stamp: 'C. L. 10/28/2019 16:37:50'!
+for: aTransfer
+
+	^ self new initializeFor: aTransfer ! !
+
+
+!classDefinition: #TransferReceived category: #'24-PortfolioTreePrinter'!
+TransferTransaction subclass: #TransferReceived
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '24-PortfolioTreePrinter'!
 
 !TransferReceived methodsFor: 'report handler' stamp: 'C. L. 10/27/2019 17:20:21'!
 handleReportFor: aReporter
@@ -1253,30 +1342,13 @@ affectBalance: aBalance
 	delta := (self value).
 	^aBalance + delta.! !
 
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'TransferReceived class' category: #'24-PortfolioTreePrinter'!
-TransferReceived class
-	instanceVariableNames: ''!
-
-!TransferReceived class methodsFor: 'instance creation' stamp: 'C. L. 10/27/2019 14:12:15'!
-for: aTransfer
-
-	^ self new initializeFor: aTransfer ! !
-
 
 !classDefinition: #TransferSent category: #'24-PortfolioTreePrinter'!
-AccountTransaction subclass: #TransferSent
-	instanceVariableNames: 'transfer'
+TransferTransaction subclass: #TransferSent
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '24-PortfolioTreePrinter'!
-
-!TransferSent methodsFor: 'initialization' stamp: 'C. L. 10/27/2019 14:13:34'!
-initializeFor: aTransfer
-
-	transfer := aTransfer ! !
-
 
 !TransferSent methodsFor: 'balance' stamp: 'C. L. 10/27/2019 14:33:12'!
 affectBalance: aBalance
@@ -1284,30 +1356,9 @@ affectBalance: aBalance
 	^aBalance - (self value).! !
 
 
-!TransferSent methodsFor: 'testing' stamp: 'C. L. 10/27/2019 15:28:29'!
-transfer
-	^transfer! !
-
-
 !TransferSent methodsFor: 'report handler' stamp: 'C. L. 10/27/2019 17:17:56'!
 handleReportFor: aReporter
 	^aReporter reportTransferSentFor: self.! !
-
-
-!TransferSent methodsFor: 'value' stamp: 'C. L. 10/27/2019 15:13:15'!
-value
-	^(transfer value).! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'TransferSent class' category: #'24-PortfolioTreePrinter'!
-TransferSent class
-	instanceVariableNames: ''!
-
-!TransferSent class methodsFor: 'instance creation' stamp: 'C. L. 10/27/2019 14:12:24'!
-for: aTransfer
-
-	^ self new initializeFor: aTransfer ! !
 
 
 !classDefinition: #Withdraw category: #'24-PortfolioTreePrinter'!
@@ -1392,10 +1443,14 @@ sendingTransaction
 TransferBetweenAccounts class
 	instanceVariableNames: ''!
 
-!TransferBetweenAccounts class methodsFor: 'instance creation' stamp: 'C. L. 10/27/2019 15:11:47'!
+!TransferBetweenAccounts class methodsFor: 'instance creation' stamp: 'C. L. 10/28/2019 16:32:55'!
 register: aValue from: senderAccount to: receiverAccount
 
 	| transaction sendingTransaction receivingTransaction |
+	
+	(aValue <= 0) ifTrue: [NegativeTransferError signal].
+	(senderAccount = receiverAccount) ifTrue: [TransferToSameAccountError signal].
+	(aValue > (senderAccount balance)) ifTrue: [TransferExceedsBalanceError signal].
 	
 	transaction := self for: aValue.
 	
