@@ -1,0 +1,707 @@
+
+
+----STARTUP---- (31 October 2019 14:18:26) as /home/eryx/Documentos/Facultad/ISW1/Cuis/linux64/CuisUniversity-3938.image!
+
+
+Object subclass: #Cart
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+!classDefinition: #Cart category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 14:23:20'!
+Object subclass: #Cart
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+TestCase subclass: #CartTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+!classDefinition: #CartTest category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 14:23:34'!
+TestCase subclass: #CartTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:24:05'!
+test01CartIsEmptyWhenCreated! !
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:24:51' prior: 50777382!
+test01CartIsEmptyWhenCreated
+	| aCart |
+	aCart := Cart new.
+	
+	self assert: (Cart isEmpty).! !
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:24:57' prior: 50777386!
+test01CartIsEmptyWhenCreated
+	| aCart |
+	aCart := Cart new.
+	
+	self assert: (aCart isEmpty).! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:24:59'!
+ERROR!
+!Cart methodsFor: 'no messages' stamp: 'C. L. 10/31/2019 14:25:14'!
+isEmpty
+	^true! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:25:21'!
+PASSED!
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:25:21'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:29:37'!
+test02CartIsNotEmptyWhenABookIsAdded
+	| aCart |
+	
+	aCart := Cart new.
+	aCart addBook: 1234567890 withQuantity: 1.
+	
+	self deny: (aCart isEmpty).! !
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:29:40'!
+ERROR!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:30:17'!
+addBook: aBookISBN withQuantity: aQuantity
+	! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:30:29' prior: 50777421!
+addBook: aBookISBN withQuantity: aQuantity
+	! !
+
+Object subclass: #Cart
+	instanceVariableNames: 'empty'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+!classDefinition: #Cart category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 14:32:02'!
+Object subclass: #Cart
+	instanceVariableNames: 'empty'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:32:14' prior: 50777401!
+isEmpty
+	^empty! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:32:24' prior: 50777426!
+addBook: aBookISBN withQuantity: aQuantity
+	empty := false! !
+!Cart class methodsFor: 'no messages' stamp: 'C. L. 10/31/2019 14:32:50'!
+new
+	^Cart new initialize! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:33:03'!
+initialize
+	empty := true! !
+!Cart class methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:33:19' prior: 50777451!
+new
+	^super new initialize! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:33:28'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:33:28'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:33:44'!
+test02CartContainsBookWhenABookIsAdded
+	| aCart |
+	
+	aCart := Cart new.
+	aCart addBook: 1234567890 withQuantity: 1.
+	
+	self deny: (aCart isEmpty).! !
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:33:49'!
+test03CartContainsBookWhenABookIsAdded
+	| aCart |
+	
+	aCart := Cart new.
+	aCart addBook: 1234567890 withQuantity: 1.
+	
+	self deny: (aCart isEmpty).! !
+
+!methodRemoval: CartTest #test02CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:33:54'!
+test02CartContainsBookWhenABookIsAdded
+	| aCart |
+	
+	aCart := Cart new.
+	aCart addBook: 1234567890 withQuantity: 1.
+	
+	self deny: (aCart isEmpty).!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:41:10' prior: 50777476!
+test03CartContainsBookWhenABookIsAdded
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN withQuantity: 1.
+	
+	self assert: (aCart listCart at: bookISBN = 1).! !
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:41:13'!
+ERROR!
+
+!classDefinition: #Cart category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 14:41:45'!
+Object subclass: #Cart
+	instanceVariableNames: 'empty bookList'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:41:43'!
+listCart
+	^bookList.! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:42:06' prior: 50777455!
+initialize
+	empty := true.
+	bookList := Dictionary new.! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:42:34' prior: 50777515!
+initialize
+	empty := true.! !
+
+Object subclass: #Cart
+	instanceVariableNames: 'empty book qty'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+!classDefinition: #Cart category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 14:42:46'!
+Object subclass: #Cart
+	instanceVariableNames: 'empty book qty'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:43:06' prior: 50777446!
+addBook: aBookISBN withQuantity: aQuantity
+	empty := false.
+	book := aBookISBN .
+	qty := aQuantity .! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:44:05' prior: 50777511!
+listCart
+	| list |
+	list := Dictionary new.
+	list at: book put: qty! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:44:09' prior: 50777543!
+listCart
+	| list |
+	list := Dictionary new.
+	list at: book put: qty.
+	^list! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:44:13'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:44:13'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:44:13'!
+ERROR!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:44:13'!
+ERROR!
+
+----End fileIn of /home/eryx/Documentos/Facultad/ISW1/Cuis/linux64/Packages/TerseGuide.pck.st----!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:45:29' prior: 50777549!
+listCart
+	| list |
+	list := Dictionary new.
+	list add: book->qty.
+	^list! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:45:33'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:45:33'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:45:33'!
+ERROR!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:45:33'!
+ERROR!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:46:02' prior: 50780580!
+listCart
+	| list |
+	list := Dictionary new.
+	list add: (book->qty).
+	^list! !
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:46:05'!
+ERROR!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:46:05'!
+ERROR!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:46:25' prior: 50777492!
+test03CartContainsBookWhenABookIsAdded
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN) = 1).! !
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:56:26'!
+PASSED!
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 14:56:26'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:56:26'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 14:56:26'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:57:49'!
+test03CartContainsBothBooksWhenTwoBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).! !
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 14:57:54'!
+test04CartContainsBothBooksWhenTwoBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).! !
+
+!methodRemoval: CartTest #test03CartContainsBothBooksWhenTwoBooksAreAdded stamp: 'C. L. 10/31/2019 14:57:58'!
+test03CartContainsBothBooksWhenTwoBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoBooksAreAdded stamp: 'C. L. 10/31/2019 14:58:00'!
+ERROR!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoBooksAreAdded stamp: 'C. L. 10/31/2019 14:58:00'!
+ERROR!
+
+Object subclass: #Cart
+	instanceVariableNames: 'empty books'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+!classDefinition: #Cart category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 14:58:22'!
+Object subclass: #Cart
+	instanceVariableNames: 'empty books'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:59:08' prior: 50777536!
+addBook: aBookISBN withQuantity: aQuantity
+	empty := false.
+	books add: aBookISBN .! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 14:59:22' prior: 50777520!
+initialize
+	empty := true.
+	books := Set new! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:00:05' prior: 50780598!
+listCart
+	| list |
+	list := Dictionary new.
+	books do: [:aBook | list add: (aBook->1)].
+	^list! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:00:10'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:00:10'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:00:10'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoBooksAreAdded stamp: 'C. L. 10/31/2019 15:00:10'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:00:20'!
+test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).! !
+
+!methodRemoval: CartTest #test04CartContainsBothBooksWhenTwoBooksAreAdded stamp: 'C. L. 10/31/2019 15:00:30'!
+test04CartContainsBothBooksWhenTwoBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:00:55'!
+test05CartContainsBothBooksWhenTwoEqualBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).! !
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:01:22' prior: 50780750!
+test05CartContainsBothBooksWhenTwoEqualBooksAreAdded
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN withQuantity: 1.
+	aCart addBook: bookISBN withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN) = 2).! !
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:01:24'!
+FAILURE!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:01:39' prior: 50780698!
+initialize
+	empty := true.
+	books := Dictionary new! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:01:59' prior: 50780692!
+addBook: aBookISBN withQuantity: aQuantity
+	empty := false.
+	books add: (aBookISBN->aQuantity).! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:02:16' prior: 50780703!
+listCart
+	^books! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:02:21'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:02:21'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:02:21'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:02:21'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:02:21'!
+FAILURE!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:02:21'!
+FAILURE!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:02:30'!
+FAILURE!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:02:30'!
+FAILURE!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:02:34'!
+PASSED!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:04:40' prior: 50780784!
+addBook: aBookISBN withQuantity: aQuantity
+	empty := false.
+	books add: (aBookISBN->(self booksWithISBN: aBookISBN + aQuantity )).! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:05:22'!
+booksWithISBN: aBookISBN
+	^books at: aBookISBN ifAbsent: [^0].! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:05:26'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:05:26'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:05:26'!
+FAILURE!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:05:26'!
+FAILURE!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:05:26'!
+FAILURE!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:05:39'!
+FAILURE!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:05:39'!
+FAILURE!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:06:59' prior: 50780826!
+addBook: aBookISBN withQuantity: aQuantity
+	empty := false.
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + aQuantity )).! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:07:02'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:07:02'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:07:02'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:07:02'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:07:02'!
+PASSED!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:07:14' prior: 50780862!
+addBook: aBookISBN withQuantity: aQuantity
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + aQuantity )).! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:07:20' prior: 50780779!
+initialize
+	books := Dictionary new! !
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:07:30' prior: 50777442!
+isEmpty
+	^books empty.! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:07:32'!
+ERROR!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:07:32'!
+ERROR!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:07:32'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:07:32'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:07:32'!
+PASSED!
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:07:46'!
+ERROR!
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:07:46'!
+ERROR!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:08:21' prior: 50780899!
+isEmpty
+	^books isEmpty.! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:08:23'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:08:23'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:08:23'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:08:23'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:08:23'!
+PASSED!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:09:02' prior: 50780887!
+addBook: aBookISBN withQuantity: aQuantity
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + 1 )).! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:09:04'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:09:04'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:09:04'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:09:04'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:09:04'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:09:48'!
+test06CartContainsAllBooksWhenMultipleBooksAreAddedSimultaneously
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN withQuantity: 2.
+	
+	self assert: ((aCart listCart at: bookISBN) = 2).! !
+
+!testRun: #CartTest #test06CartContainsAllBooksWhenMultipleBooksAreAddedSimultaneously stamp: 'C. L. 10/31/2019 15:09:50'!
+FAILURE!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:10:00' prior: 50780947!
+addBook: aBookISBN withQuantity: aQuantity
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + aQuantity )).! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:10:02'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:10:02'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:10:02'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:10:02'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:10:02'!
+PASSED!
+
+!testRun: #CartTest #test06CartContainsAllBooksWhenMultipleBooksAreAddedSimultaneously stamp: 'C. L. 10/31/2019 15:10:02'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:10:10'!
+test04CartContainsBothBooksWhenManyDifferentBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).! !
+
+!methodRemoval: CartTest #test04CartContainsBothBooksWhenManyDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:10:22'!
+test04CartContainsBothBooksWhenManyDifferentBooksAreAdded
+	| aCart bookISBN1 bookISBN2 |
+	bookISBN1 := 1234567890.
+	bookISBN2 := 9876543210.
+	
+	aCart := Cart new.
+	aCart addBook: bookISBN1 withQuantity: 1.
+	aCart addBook: bookISBN2 withQuantity: 1.
+	
+	self assert: ((aCart listCart at: bookISBN1) = 1).
+	self assert: ((aCart listCart at: bookISBN2) = 1).!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:11:55'!
+test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	self should: [aCart addBook: bookISBN withQuantity: 0] raise: Error.! !
+
+!testRun: #CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books stamp: 'C. L. 10/31/2019 15:11:57'!
+FAILURE!
+
+Error subclass: #InvalidBookQuantityError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+
+!classDefinition: #InvalidBookQuantityError category: #'25-TusLibros' stamp: 'C. L. 10/31/2019 15:12:16'!
+Error subclass: #InvalidBookQuantityError
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '25-TusLibros'!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:12:28' prior: 50781041!
+test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	self should: [aCart addBook: bookISBN withQuantity: 0] raise: InvalidBookQuantityError .! !
+
+!testRun: #CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books stamp: 'C. L. 10/31/2019 15:12:29'!
+FAILURE!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:13:11' prior: 50780985!
+addBook: aBookISBN withQuantity: aQuantity
+	(aQuantity > 0) ifFalse: [InvalidBookQuantityError signal].
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + aQuantity )).! !
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:13:20'!
+PASSED!
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+
+!testRun: #CartTest #test06CartContainsAllBooksWhenMultipleBooksAreAddedSimultaneously stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+
+!testRun: #CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books stamp: 'C. L. 10/31/2019 15:13:23'!
+PASSED!
+!CartTest methodsFor: 'testing' stamp: 'C. L. 10/31/2019 15:13:48'!
+test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Book
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	self should: [aCart addBook: bookISBN withQuantity: 0] raise: InvalidBookQuantityError .! !
+
+!methodRemoval: CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books stamp: 'C. L. 10/31/2019 15:13:51'!
+test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Books
+	| aCart bookISBN |
+	bookISBN := 1234567890.
+	
+	aCart := Cart new.
+	self should: [aCart addBook: bookISBN withQuantity: 0] raise: InvalidBookQuantityError .!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:14:09' prior: 50781082!
+addBook: aBookISBN withQuantity: aQuantity
+	"(aQuantity > 0) ifFalse: [InvalidBookQuantityError signal]."
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + aQuantity )).! !
+
+!testRun: #CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Book stamp: 'C. L. 10/31/2019 15:14:12'!
+FAILURE!
+
+!testRun: #CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Book stamp: 'C. L. 10/31/2019 15:14:12'!
+FAILURE!
+!Cart methodsFor: 'as yet unclassified' stamp: 'C. L. 10/31/2019 15:14:27' prior: 50781140!
+addBook: aBookISBN withQuantity: aQuantity
+	(aQuantity > 0) ifFalse: [InvalidBookQuantityError signal].
+	books add: (aBookISBN->((self booksWithISBN: aBookISBN) + aQuantity )).! !
+
+!testRun: #CartTest #test01CartIsEmptyWhenCreated stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
+
+!testRun: #CartTest #test02CartIsNotEmptyWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
+
+!testRun: #CartTest #test03CartContainsBookWhenABookIsAdded stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
+
+!testRun: #CartTest #test04CartContainsBothBooksWhenTwoDifferentBooksAreAdded stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
+
+!testRun: #CartTest #test05CartContainsBothBooksWhenTwoEqualBooksAreAdded stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
+
+!testRun: #CartTest #test06CartContainsAllBooksWhenMultipleBooksAreAddedSimultaneously stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
+
+!testRun: #CartTest #test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Book stamp: 'C. L. 10/31/2019 15:14:30'!
+PASSED!
