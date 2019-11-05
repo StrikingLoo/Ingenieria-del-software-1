@@ -156,17 +156,17 @@ TestCase subclass: #CreditCardTest
 	poolDictionaries: ''
 	category: '25-TusLibros'!
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 19:49:18'!
+!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 21:09:30'!
 test01CardWithLessThan12DigitsInvalid
     |cc| 
     cc := CreditCard withNumber: '1234' expiresOn: 2017@01  withOwner: 'Nombre Apellido'.
-    self assert: cc isValid equals: false! !
+    self assert: (cc validate) equals: 'Invalid CCN'! !
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 19:55:18'!
+!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 21:09:37'!
 test02CardWithEmptyCardHolderNameInvalid
     |cc| 
     cc := CreditCard withNumber: '123412341234' expiresOn: 2017@01  withOwner: ''.
-    self assert: cc isValid equals: false.! !
+     self assert: (cc validate) equals: 'Invalid CHN'! !
 
 
 !classDefinition: #Cart category: #'25-TusLibros'!
@@ -226,10 +226,6 @@ Object subclass: #CreditCard
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '25-TusLibros'!
-
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 19:15:59'!
-initialize
-    ! !
 
 !CreditCard methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 19:18:27'!
 initializeWithNumber: aCCN expiresOn: anED withOwner: aCCO
