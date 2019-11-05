@@ -81,7 +81,7 @@ test07CartRaisesInvalidQuantityErrorWhenTryingToAddLessThan1Book
 	aCart := Cart new.
 	self should: [aCart addBook: bookISBN withQuantity: 0] raise: InvalidBookQuantityError .! !
 
-!CartTest methodsFor: 'testing' stamp: 'L S 11/4/2019 19:59:22'!
+!CartTest methodsFor: 'testing' stamp: 'L S 11/4/2019 21:02:11'!
 test08CartCheckOutInvalidCCTransaction
     |mockCC aCart aLedger transactionResult|
     mockCC := CreditCard withNumber: '12345678124' expiresOn: 2022@09 withOwner: 'Owner McOwnerface'.
@@ -90,7 +90,7 @@ test08CartCheckOutInvalidCCTransaction
     aLedger := TransactionsLedger new.
     transactionResult := aCart checkOutWith: mockCC writeTo: aLedger .
 
-    self assert: transactionResult equals: 1@'invalid CC'.
+    self assert: transactionResult equals: 1@'Invalid CCN'.
     self assert: (aLedger transactionCount ) equals: 0! !
 
 !CartTest methodsFor: 'testing' stamp: 'L S 11/4/2019 19:56:29'!
@@ -181,13 +181,13 @@ initialize
 	books := Dictionary new! !
 
 
-!Cart methodsFor: 'checkOut' stamp: 'L S 11/4/2019 19:59:11'!
+!Cart methodsFor: 'checkOut' stamp: 'L S 11/4/2019 21:01:51'!
 checkOutWith: aCard writeTo: aLedger
-    (aCard isValid ) ifTrue:  [
+    (aCard validate = 'Valid CC' ) ifTrue:  [
 	 aLedger register: books.
       ^0@(aLedger transactionCount)
      ] ifFalse: [
-       ^1@'invalid CC'
+       ^1@(aCard validate)
      ]
     ! !
 
@@ -238,11 +238,11 @@ initializeWithNumber: aCCN expiresOn: anED withOwner: aCCO
     cced := anED .
 ! !
 
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 19:51:48'!
-isValid
-    (ccn size ~= 12) ifTrue: [^false].
-    (cco size = 0) ifTrue: [^false].
-    ^true! !
+!CreditCard methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 21:01:12'!
+validate
+    (ccn size ~= 12) ifTrue: [^'Invalid CCN'].
+    (cco size = 0) ifTrue: [^'Invalid CHN'].
+    ^'Valid CC'! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -267,11 +267,13 @@ initialize
 
 	transactions := OrderedCollection new.! !
 
-!TransactionsLedger methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 20:18:52'!
+!TransactionsLedger methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 20:28:41'!
 listPurchases
     |bookCounts|
     bookCounts := Dictionary new.
-    transactions collect: [:cartContents| cartContents keys collect: [:key | bookCounts at: key put: ((bookCounts at: key ifAbsent: 0 )+(cartContents at: key)) ]].
+    transactions collect: [:cartContents| 
+	cartContents keys collect: 
+	    [:key | bookCounts at: key put: ((bookCounts at: key ifAbsent: 0 )+(cartContents at: key)) ]].
     ^bookCounts! !
 
 !TransactionsLedger methodsFor: 'as yet unclassified' stamp: 'L S 11/4/2019 19:38:57'!
