@@ -1,44 +1,43 @@
-!classDefinition: #BookstoreOrchestratorTest category: #TusLibros!
-TestCase subclass: #BookstoreOrchestratorTest
+!classDefinition: #BookstoreFacadeTest category: #TusLibros!
+TestCase subclass: #BookstoreFacadeTest
 	instanceVariableNames: 'exampleCatalog factory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
-!BookstoreOrchestratorTest commentStamp: '<historical>' prior: 0!
+!BookstoreFacadeTest commentStamp: '<historical>' prior: 0!
 Puede un usuario tener mas de un carrito simultaneamente?  No!! Por suerte, deberiamos modelar cada carrito asociado a un solo usuario, mappeado por el orquestador.
 Deberia el carrito conocer su ID y su usuario? No!! El orquestador conoce ambas propiedades del carrito y es el que se encarga de manejar tales interacciones.!
 
 
-!BookstoreOrchestratorTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:16:01'!
-test01BookstoreKnowsCatalog
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 19:09:53'!
+test01ANewBookstoreHasNoOnlineCarts
     |bookstore|
     bookstore := factory createBookstore .
+    self assert: (bookstore onlineCarts ) equals: 0! !
 
-    self assert: (bookstore cartsInProcess ) equals: 0! !
-
-!BookstoreOrchestratorTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:15:39'!
-test02BookstoreHasOneCart
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 19:18:00'!
+test02BookstoreWithAnAddedCartHasOneCart
     |bookstore|
 
     bookstore := factory createBookstore.
     bookstore addCart: (factory createCart) forUser: 1234 .
-    self assert: (bookstore cartsInProcess ) equals: 1.! !
+    self assert: (bookstore onlineCarts ) equals: 1.! !
 
-!BookstoreOrchestratorTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:15:29'!
-test03AwareOfUsersOnline
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 20:11:08'!
+test03AfterCreatingACartForAUserItBecomesOnline
     |bookstore|
     bookstore := factory createBookstore .
     bookstore addCart: (factory createCart ) forUser: 1234.
     self assert: (bookstore isOnlineUser: 1234 )! !
 
-!BookstoreOrchestratorTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:17:39'!
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:39:24'!
 test04UserCannotHaveTwoCarts
     |bookstore|
     bookstore := factory createBookstore .
     bookstore addCart: (factory createCart ) forUser: 1234.
-    self should: [bookstore addCart: Cart new forUser: 1234] raise: Error description: (BookstoreOrchestrator duplicateUserErrorMessage) . ! !
+    self should: [bookstore addCart: Cart new forUser: 1234] raise: Error description: (BookstoreFacade duplicateUserErrorMessage) . ! !
 
-!BookstoreOrchestratorTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:20:16'!
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:20:16'!
 test05CanAddBookToCart
     |bookstore|
     bookstore := factory createBookstore .
@@ -46,18 +45,73 @@ test05CanAddBookToCart
     bookstore add: 1 instancesOfBook: (factory itemSellByTheStore) toCartId: 1 .
     self assert: ((bookstore listCart: 1) size) equals: 1! !
 
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:09:15'!
+test06ThereIsOneLessOnlineCartAfterCheckout
+    |bookstore cartID aCreditCard aMerchantProcessor |
+    aCreditCard := factory notExpiredCreditCard .
+    aMerchantProcessor := MockedMerchantProcessor new.
 
-!BookstoreOrchestratorTest methodsFor: 'initialization' stamp: 'L S 11/11/2019 18:07:45'!
+    bookstore := factory createBookstore .
+    cartID := bookstore addCart: (factory createCart ) forUser: 1234.
+    bookstore add: 1 instancesOfBook: (factory itemSellByTheStore) toCartId: cartID.
+    bookstore checkout: cartID charging: aCreditCard through: aMerchantProcessor.
+    self assert: (bookstore onlineCarts ) equals: 0.
+    self deny: (bookstore isOnlineUser: 1234) .! !
+
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:12:15'!
+test07TotalForUserIsComputedAfterCheckout
+    |bookstore cartID aCreditCard aMerchantProcessor |
+    aCreditCard := factory notExpiredCreditCard .
+    aMerchantProcessor := MockedMerchantProcessor new.
+
+    bookstore := factory createBookstore .
+    cartID := bookstore addCart: (factory createCart ) forUser: 1234.
+    bookstore add: 1 instancesOfBook: (factory itemSellByTheStore) toCartId: cartID.
+    bookstore checkout: cartID charging: aCreditCard through: aMerchantProcessor.
+    self assert: (factory itemSellByTheStorePrice ) equals: (bookstore totalAmountFor: 1234 ).! !
+
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:27:58'!
+test08TotalForUserIsComputedAfterManyCheckouts
+    |bookstore cartID aCreditCard aMerchantProcessor |
+    aCreditCard := factory notExpiredCreditCard .
+    aMerchantProcessor := MockedMerchantProcessor new.
+
+    bookstore := factory createBookstore .
+    cartID := bookstore addCart: (factory createCart ) forUser: 1234.
+    bookstore add: 1 instancesOfBook: (factory itemSellByTheStore) toCartId: cartID.
+    bookstore checkout: cartID charging: aCreditCard through: aMerchantProcessor.
+    
+    cartID := bookstore addCart: (factory createCart ) forUser: 1234.
+    bookstore add: 1 instancesOfBook: (factory itemSellByTheStore) toCartId: cartID.
+    bookstore checkout: cartID charging: aCreditCard through: aMerchantProcessor.
+
+    self assert: 2*(factory itemSellByTheStorePrice ) equals: (bookstore totalAmountFor: 1234 ).! !
+
+!BookstoreFacadeTest methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:59:05'!
+test09PurchaseHistoryForUserIsComputedAfterSingleCheckout
+    |bookstore cartID aCreditCard aMerchantProcessor |
+    aCreditCard := factory notExpiredCreditCard .
+    aMerchantProcessor := MockedMerchantProcessor new.
+
+    bookstore := factory createBookstore .
+    cartID := bookstore addCart: (factory createCart ) forUser: 1234.
+    bookstore add: 1 instancesOfBook: (factory itemSellByTheStore) toCartId: cartID.
+    bookstore checkout: cartID charging: aCreditCard through: aMerchantProcessor.
+
+    self assert: ((bookstore purchaseHistoryFor: 1234) keys) includes: (factory itemSellByTheStore ).! !
+
+
+!BookstoreFacadeTest methodsFor: 'initialization' stamp: 'L S 11/11/2019 18:07:45'!
 initialize
 	factory := StoreTestObjectsFactory new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'BookstoreOrchestratorTest class' category: #TusLibros!
-BookstoreOrchestratorTest class
+!classDefinition: 'BookstoreFacadeTest class' category: #TusLibros!
+BookstoreFacadeTest class
 	instanceVariableNames: ''!
 
-!BookstoreOrchestratorTest class methodsFor: 'instance creation' stamp: 'L S 11/11/2019 18:08:18'!
+!BookstoreFacadeTest class methodsFor: 'instance creation' stamp: 'L S 11/11/2019 18:08:18'!
 new
 	^super new initialize.! !
 
@@ -169,7 +223,7 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CashierTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:50'!
+!CashierTest methodsFor: 'tests' stamp: 'L S 11/11/2019 21:04:19'!
 test01CanNotCheckoutAnEmptyCart
 
 	| salesBook |
@@ -179,7 +233,7 @@ test01CanNotCheckoutAnEmptyCart
 		should: [ Cashier 
 			toCheckout: testObjectsFactory createCart 
 			charging: testObjectsFactory notExpiredCreditCard 
-			throught: self
+			throught: (MockedMerchantProcessor new)
 			on: testObjectsFactory today
 			registeringOn:  salesBook ]
 		raise: Error - MessageNotUnderstood
@@ -187,7 +241,7 @@ test01CanNotCheckoutAnEmptyCart
 			self assert: anError messageText = Cashier cartCanNotBeEmptyErrorMessage.
 			self assert: salesBook isEmpty ]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:51'!
+!CashierTest methodsFor: 'tests' stamp: 'L S 11/11/2019 21:04:25'!
 test02CalculatedTotalIsCorrect
 
 	| cart cashier |
@@ -198,13 +252,13 @@ test02CalculatedTotalIsCorrect
 	cashier :=  Cashier
 		toCheckout: cart 
 		charging: testObjectsFactory notExpiredCreditCard 
-		throught: self
+		throught: (MockedMerchantProcessor new)
 		on: testObjectsFactory today 
 		registeringOn: OrderedCollection new.
 		
 	self assert: cashier checkOut = (testObjectsFactory itemSellByTheStorePrice * 2)! !
 
-!CashierTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:51'!
+!CashierTest methodsFor: 'tests' stamp: 'L S 11/11/2019 21:04:31'!
 test03CanNotCheckoutWithAnExpiredCreditCart
 
 	| cart salesBook |
@@ -217,7 +271,7 @@ test03CanNotCheckoutWithAnExpiredCreditCart
 		should: [ Cashier 
 				toCheckout: cart 
 				charging: testObjectsFactory expiredCreditCard 
-				throught: self
+				throught: (MockedMerchantProcessor new)
 				on: testObjectsFactory today
 				registeringOn: salesBook ]
 		raise: Error - MessageNotUnderstood
@@ -225,7 +279,7 @@ test03CanNotCheckoutWithAnExpiredCreditCart
 			self assert: anError messageText = Cashier canNotChargeAnExpiredCreditCardErrorMessage.
 			self assert: salesBook isEmpty ]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 19:04'!
+!CashierTest methodsFor: 'tests' stamp: 'L S 11/11/2019 21:04:38'!
 test04CheckoutRegistersASale
 
 	| cart cashier salesBook total |
@@ -237,7 +291,7 @@ test04CheckoutRegistersASale
 	cashier:= Cashier 
 		toCheckout: cart 
 		charging: testObjectsFactory notExpiredCreditCard
-		throught: self
+		throught: (MockedMerchantProcessor new)
 		on: testObjectsFactory today
 		registeringOn: salesBook.
 		
@@ -246,7 +300,7 @@ test04CheckoutRegistersASale
 	self assert: salesBook size = 1.
 	self assert: salesBook first total = total.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 19:00'!
+!CashierTest methodsFor: 'tests' stamp: 'L S 11/11/2019 20:59:56'!
 test05CashierChargesCreditCardUsingMerchantProcessor
 
 	| cart cashier salesBook total creditCard debitedAmout debitedCreditCard  |
@@ -256,22 +310,23 @@ test05CashierChargesCreditCardUsingMerchantProcessor
 	creditCard := testObjectsFactory notExpiredCreditCard.
 	salesBook := OrderedCollection new.
  
-	cashier:= Cashier 
-		toCheckout: cart 
-		charging: creditCard
-		throught: self
-		on: testObjectsFactory today
-		registeringOn: salesBook.
-		
 	debitBehavior := [ :anAmount :aCreditCard | 
 		debitedAmout := anAmount.
 		debitedCreditCard := aCreditCard ].
+
+	cashier:= Cashier 
+		toCheckout: cart 
+		charging: creditCard
+		throught: (MockedMerchantProcessor withDebitBehavior: debitBehavior )
+		on: testObjectsFactory today
+		registeringOn: salesBook.
+		
 	total := cashier checkOut.
 					
 	self assert: debitedCreditCard = creditCard.
 	self assert: debitedAmout = total.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:59'!
+!CashierTest methodsFor: 'tests' stamp: 'L S 11/11/2019 21:01:08'!
 test06CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 
 	| cart cashier salesBook creditCard |
@@ -285,7 +340,7 @@ test06CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 	cashier:= Cashier 
 		toCheckout: cart 
 		charging: creditCard
-		throught: self
+		throught: (MockedMerchantProcessor withDebitBehavior: debitBehavior )
 		on: testObjectsFactory today
 		registeringOn: salesBook.
 		
@@ -303,77 +358,121 @@ setUp
 	testObjectsFactory := StoreTestObjectsFactory new.
 	debitBehavior := [ :anAmount :aCreditCard | ]! !
 
-
-!CashierTest methodsFor: 'merchant processor protocol' stamp: 'HernanWilkinson 6/17/2013 19:02'!
-debit: anAmount from: aCreditCard 
-
-	^debitBehavior value: anAmount value: aCreditCard ! !
-
 
-!classDefinition: #BookstoreOrchestrator category: #TusLibros!
-Object subclass: #BookstoreOrchestrator
-	instanceVariableNames: 'carts priceCatalog users'
+!classDefinition: #BookstoreFacade category: #TusLibros!
+Object subclass: #BookstoreFacade
+	instanceVariableNames: 'priceCatalog onlineCarts cartsToUsers userPurchasesNetSum lastCartID userPurchasesHistory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:19:44'!
-add: aQuantity instancesOfBook: aBookISBN toCartId: cartID
-    |cart|
-    cart := (self cart: cartID).
-    cart add: aQuantity of: aBookISBN  .
+!BookstoreFacade methodsFor: 'checkout' stamp: 'L S 11/11/2019 21:58:50'!
+checkout: aCartID charging: aCreditCard through: aMerchantProcessor
+    | userID cart cartsHistory |
+    userID := cartsToUsers at: aCartID.
+    cart := onlineCarts at: aCartID.
+
+    onlineCarts removeKey: aCartID .
+    userPurchasesNetSum at: ( userID ) put: ((userPurchasesNetSum at: userID ifAbsent: [0]) + cart total).
+    cartsHistory := (userPurchasesHistory at: userID ifAbsent: [OrderedCollection new]).
+    cartsHistory add: cart.
+    userPurchasesHistory at: userID  put: ( cartsHistory ). 
+    cartsToUsers removeKey: aCartID .
+    ! !
+
+
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 19:11:17'!
+add: aQuantity instancesOfBook: aBookISBN toCartId: aCartID
+    | cart |
+    cart := (self cart: aCartID).
+    cart add: aQuantity of: aBookISBN .
     
 
     ! !
 
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:13:04'!
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 19:36:05'!
 addCart: aCart forUser: userID
+    | thisCartID |
     "seria mejor poder meter una lista de tuplas, pero no encuentro tuplas en smalltalk"
     (self isOnlineUser: userID ) ifTrue: [self error: (self class duplicateUserErrorMessage ) ].
-    carts add: aCart.
-    users add: userID! !
+    thisCartID := self nextCartID.
 
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/7/2019 20:27:58'!
+    onlineCarts at: thisCartID put: aCart.
+    cartsToUsers at: thisCartID put: userID.
+    ^thisCartID.! !
+
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:51:25'!
 cart: aCartID
     |cart|
-    cart := carts at: aCartID ifAbsent: [InvalidCartIDError signal].
+    cart := onlineCarts at: aCartID ifAbsent: [self error: (self class invalidCartIDErrorMessage)].
     ^cart
 
     ! !
 
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/7/2019 19:49:46'!
-cartsInProcess
-    ^(carts size)! !
-
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/7/2019 20:10:38'!
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:33:28'!
 initializeWithCatalog: aCatalog
-	carts := OrderedCollection new.
-	users := OrderedCollection new.
-	priceCatalog := aCatalog.
+	onlineCarts := Dictionary new.
+	cartsToUsers := Dictionary new.
+	userPurchasesNetSum := Dictionary new.
+	userPurchasesHistory := Dictionary new.
+	lastCartID := 1.
+      priceCatalog := aCatalog.
 	! !
 
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/7/2019 20:12:49'!
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 19:28:26'!
 isOnlineUser: aUserID
-    ^(users select: [:anotherUserID| anotherUserID = aUserID ]) size = 1! !
+    ^(cartsToUsers values select: [:anotherUserID| anotherUserID = aUserID ]) size = 1! !
 
-!BookstoreOrchestrator methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:24:02'!
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:24:02'!
 listCart: aCartID
     ^(self cart: aCartID ) list .! !
 
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:23:34'!
+nextCartID
+	| cartID |
+	cartID := lastCartID.
+	lastCartID := (lastCartID + 1).
+	^cartID.! !
+
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 19:09:45'!
+onlineCarts
+    ^(onlineCarts size)! !
+
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:49:26'!
+purchaseHistoryFor: aUserID
+    |cartHistory cartsAsDictionaries totalPurchasesHistory|
+    cartHistory := userPurchasesHistory at: aUserID ifAbsent: [OrderedCollection new].
+    cartsAsDictionaries := cartHistory collect: [:aCart | aCart asDictionary ].
+    totalPurchasesHistory := Dictionary new.
+    cartsAsDictionaries collect: [:aDictionary | aDictionary keysAndValuesDo: [:key :value | totalPurchasesHistory at: key put: 
+		(totalPurchasesHistory at: key ifAbsent: [0]) + value
+		]
+	].
+    ^totalPurchasesHistory 
+    ! !
+
+!BookstoreFacade methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:25:15'!
+totalAmountFor: aUserID
+    ^userPurchasesNetSum at: aUserID ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'BookstoreOrchestrator class' category: #TusLibros!
-BookstoreOrchestrator class
+!classDefinition: 'BookstoreFacade class' category: #TusLibros!
+BookstoreFacade class
 	instanceVariableNames: ''!
 
-!BookstoreOrchestrator class methodsFor: 'as yet unclassified' stamp: 'L S 11/7/2019 19:44:29'!
+!BookstoreFacade class methodsFor: 'as yet unclassified' stamp: 'L S 11/7/2019 19:44:29'!
 withCatalog: aCatalog
 	^super new initializeWithCatalog: aCatalog.! !
 
 
-!BookstoreOrchestrator class methodsFor: 'error messages' stamp: 'L S 11/11/2019 18:13:04'!
+!BookstoreFacade class methodsFor: 'error messages' stamp: 'L S 11/11/2019 18:13:04'!
 duplicateUserErrorMessage
 	^'There cannot be multiple carts for the same user'! !
+
+!BookstoreFacade class methodsFor: 'error messages' stamp: 'L S 11/11/2019 18:44:26'!
+invalidCartIDErrorMessage
+	^'CartID does not exist'! !
 
 
 !classDefinition: #Cart category: #TusLibros!
@@ -449,9 +548,13 @@ add: aQuantity of: anItem
 	1 to: aQuantity do: [ :aNumber | items add: anItem ]! !
 
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 18:23:37'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 22:00:04'!
+asDictionary
+    ^(items )! !
+
+!Cart methodsFor: 'as yet unclassified' stamp: 'L S 11/11/2019 21:42:17'!
 list
-    ^items! !
+    ^items ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -568,13 +671,6 @@ initializeExpiringOn: aMonth
 	
 	expiration := aMonth ! !
 
-!CreditCard methodsFor: 'initialization' stamp: 'C. L. 11/7/2019 12:00:00'!
-initializeWithNumber: aCCN expiresOn: anED withOwner: aCCO
-    cardNumber := aCCN .
-    owner := aCCO.
-    expirationMonthOfYear := anED .
-! !
-
 
 
 !CreditCard methodsFor: 'testing' stamp: 'HernanWilkinson 6/17/2013 18:39'!
@@ -593,11 +689,36 @@ expiringOn: aMonth
 	
 	^self new initializeExpiringOn: aMonth! !
 
-!CreditCard class methodsFor: 'instance creation' stamp: 'C. L. 11/7/2019 15:41:12'!
-withNumber: aCCN expiresOn: anED withOwner: aCCO
-	(aCCN size = 12) ifFalse: [self error: 'Invalid Card Number'].
-	(aCCO isEmpty) ifTrue: [self error: 'Invalid Card Owner Name'].
-	^self new initializeWithNumber: aCCN expiresOn: anED withOwner: aCCO! !
+
+!classDefinition: #MockedMerchantProcessor category: #TusLibros!
+Object subclass: #MockedMerchantProcessor
+	instanceVariableNames: 'debitBehavior'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!MockedMerchantProcessor methodsFor: 'initialization' stamp: 'L S 11/11/2019 21:04:01'!
+initialize
+	debitBehavior := [:amount :creditCard |]! !
+
+!MockedMerchantProcessor methodsFor: 'initialization' stamp: 'L S 11/11/2019 20:57:50'!
+initializeWithDebitBehavior: aClause
+	debitBehavior := aClause! !
+
+
+!MockedMerchantProcessor methodsFor: 'debit' stamp: 'L S 11/11/2019 20:56:20'!
+debit: anAmount from: aCreditCard 
+	^debitBehavior value: anAmount value: aCreditCard .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'MockedMerchantProcessor class' category: #TusLibros!
+MockedMerchantProcessor class
+	instanceVariableNames: ''!
+
+!MockedMerchantProcessor class methodsFor: 'instance creation' stamp: 'L S 11/11/2019 20:57:22'!
+withDebitBehavior: aClause
+	^self new initializeWithDebitBehavior: aClause.! !
 
 
 !classDefinition: #Sale category: #TusLibros!
@@ -624,7 +745,7 @@ initializeTotal: aTotal
 Sale class
 	instanceVariableNames: ''!
 
-!Sale class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 18:47'!
+!Sale class methodsFor: 'instance creation' stamp: 'L S 11/11/2019 20:03:35'!
 of: aTotal
 
 	"should assert total is not negative or 0!!"
@@ -684,9 +805,9 @@ initialize
 	today := DateAndTime now! !
 
 
-!StoreTestObjectsFactory methodsFor: 'bookstore' stamp: 'L S 11/11/2019 18:05:06'!
+!StoreTestObjectsFactory methodsFor: 'bookstore' stamp: 'L S 11/11/2019 18:39:24'!
 createBookstore
-	^BookstoreOrchestrator withCatalog: (self defaultCatalog)! !
+	^BookstoreFacade withCatalog: (self defaultCatalog)! !
 
 
 !StoreTestObjectsFactory methodsFor: 'date' stamp: 'HernanWilkinson 6/17/2013 18:37'!
