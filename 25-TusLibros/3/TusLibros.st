@@ -1,4 +1,4 @@
-!classDefinition: #BookstoreFacadeTest category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #BookstoreFacadeTest category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 TestCase subclass: #BookstoreFacadeTest
 	instanceVariableNames: 'exampleCatalog factory clock debitBehavior'
 	classVariableNames: ''
@@ -190,7 +190,7 @@ test15ListPurchasesOfAUserWithManyPurchasesContainsAllOfThem
 	self assert: (userPurchases includes: anItem).
 	self assert: (userPurchases occurrencesOf: anItem) = 2.! !
 
-!BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 12:51:01'!
+!BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 14:20:35'!
 test16AddingABookToExpiredCartFails
 	| bookstore aCartId |
 	bookstore := factory bookstoreInterfaceWithClock: clock withMerchantProcessor: self.
@@ -200,9 +200,9 @@ test16AddingABookToExpiredCartFails
 	
 	self should: [bookstore add: 1 of: (factory itemSellByTheStore) to: aCartId]
 		raise: (Error - MessageNotUnderstood)
-		withMessageText: (BookstoreFacade cartSessionExpiredErrorText).! !
+		withMessageText: (CartSession expiredSessionErrorMessage).! !
 
-!BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 13:07:11'!
+!BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 14:20:40'!
 test17CheckoutForExpiredCartFails
 	| bookstore aCartId |
 	bookstore := factory bookstoreInterfaceWithClock: clock withMerchantProcessor: self.
@@ -213,9 +213,9 @@ test17CheckoutForExpiredCartFails
 	
 	self should: [bookstore checkout: aCartId through: (factory notExpiredCreditCard)]
 		raise: (Error - MessageNotUnderstood)
-		withMessageText: (BookstoreFacade cartSessionExpiredErrorText).! !
+		withMessageText: (CartSession expiredSessionErrorMessage).! !
 
-!BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 12:51:01'!
+!BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 14:20:46'!
 test18ListCartForExpiredCartFails
 	| bookstore aCartId |
 	bookstore := factory bookstoreInterfaceWithClock: clock withMerchantProcessor: self.
@@ -226,7 +226,7 @@ test18ListCartForExpiredCartFails
 	
 	self should: [bookstore listCart: aCartId]
 		raise: (Error - MessageNotUnderstood)
-		withMessageText: (BookstoreFacade cartSessionExpiredErrorText).! !
+		withMessageText: (CartSession expiredSessionErrorMessage).! !
 
 !BookstoreFacadeTest methodsFor: 'testing' stamp: 'C. L. 11/18/2019 12:51:01'!
 test19AddingABookUpdatesCartLastUsage
@@ -265,12 +265,12 @@ goForwardInTime: aDuration
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'BookstoreFacadeTest class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'BookstoreFacadeTest class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 BookstoreFacadeTest class
 	instanceVariableNames: 'factory'!
 
 
-!classDefinition: #CartTest category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #CartTest category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 TestCase subclass: #CartTest
 	instanceVariableNames: 'testObjectsFactory'
 	classVariableNames: ''
@@ -370,7 +370,7 @@ setUp
 	testObjectsFactory := StoreTestObjectsFactory new.! !
 
 
-!classDefinition: #CashierTest category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #CashierTest category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 TestCase subclass: #CashierTest
 	instanceVariableNames: 'testObjectsFactory debitBehavior'
 	classVariableNames: ''
@@ -518,59 +518,53 @@ debit: anAmount from: aCreditCard
 	^debitBehavior value: anAmount value: aCreditCard ! !
 
 
-!classDefinition: #BookstoreFacade category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #BookstoreFacade category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #BookstoreFacade
-	instanceVariableNames: 'catalog carts validUsers lastCartId purchasesHistory cartIdToUserId clock lastUsage merchantProcessor salesBook'
+	instanceVariableNames: 'catalog sessions validUsers lastCartId purchasesHistory clock merchantProcessor salesBook'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 12:33:32'!
+!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 14:19:37'!
 add: aQuantity of: anItem to: aCartId
-	self denySessionExpiredFor: aCartId.
-	(carts at: aCartId) add: aQuantity of: anItem.
-	self updateLastUsageFor: aCartId.! !
+	(sessions at: aCartId) doToCart: [:cart | cart add: aQuantity of: anItem] withTimestamp: (clock now).! !
 
-!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 13:10:02'!
+!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 14:17:38'!
 checkout: aCartId through: aCreditCard
-	| cart userId cashier date |
-	(carts includesKey: aCartId) ifFalse: [self error: (self class invalidCartErrorMessage)].
-	cart := carts at: aCartId.
-	userId := self userOfCart: aCartId.
+	| session userId cashier date block |
+	(sessions includesKey: aCartId) ifFalse: [self error: (self class invalidCartErrorMessage)].
+	session := sessions at: aCartId.
+	userId := session userId.
 	date := clock today.
 	
-	self denySessionExpiredFor: aCartId.
-	
-	cashier := Cashier
-		toCheckout: cart
-		charging: aCreditCard
-		throught: merchantProcessor
-		on: date
-		registeringOn: salesBook.
-	cashier checkOut.
+	block := [:cart |
+		cashier := Cashier
+			toCheckout: cart
+			charging: aCreditCard
+			throught: merchantProcessor
+			on: date
+			registeringOn: salesBook.
+		cashier checkOut.
+	].
+	session doToCart: block withTimestamp: (clock now).
 	
 	self addAllPurchasesIn: aCartId to: userId.
-	carts removeKey: aCartId.! !
+	sessions removeKey: aCartId.! !
 
-!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 12:20:59'!
+!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 14:10:41'!
 createCartFor: aUserId withPassword: aPassword
 	| cartId |
 	(validUsers includesKey: aUserId) ifFalse: [self error: (self class nonExistentUserErrorMessage)].
 	(aPassword = (validUsers at: aUserId)) ifFalse: [self error: (self class wrongPasswordErrorMessage)].
 	
 	cartId := self nextCartId.
-	carts at: cartId put: (Cart acceptingItemsOf: catalog).
-	cartIdToUserId at: cartId put: aUserId.
-	lastUsage at: cartId put: (clock now).
+	sessions at: cartId put: (CartSession for: aUserId acceptingItemsOf: catalog withTimestamp: (clock now)).
 	^cartId.! !
 
-!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 12:34:57'!
+!BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 14:12:01'!
 listCart: aCartId
-	
-	(carts includesKey: aCartId) ifFalse: [self error: (self class nonExistentCartErrorDescription)].
-	self denySessionExpiredFor: aCartId .
-	self updateLastUsageFor: aCartId.
-	^(carts at: aCartId) list.! !
+	(sessions includesKey: aCartId) ifFalse: [self error: (self class nonExistentCartErrorDescription)].
+	^(sessions at: aCartId) doToCart: [:cart | cart list] withTimestamp: (clock now).! !
 
 !BookstoreFacade methodsFor: 'interface' stamp: 'C. L. 11/18/2019 00:11:41'!
 listPurchases: aUserId 
@@ -590,12 +584,12 @@ userOfCart: aCartId
 	^cartIdToUserId at: aCartId.! !
 
 
-!BookstoreFacade methodsFor: 'initialization' stamp: 'C. L. 11/18/2019 12:53:24'!
+!BookstoreFacade methodsFor: 'initialization' stamp: 'C. L. 11/18/2019 14:09:56'!
 initializeAcceptingItemsOf: aCatalog withUsers: users withMerchantProcessor: aMerchantProcessor withClock: aClock
 	catalog := aCatalog.
 	validUsers := users.
 	
-	carts := Dictionary new.
+	sessions := Dictionary new.
 	purchasesHistory := Dictionary new.
 	cartIdToUserId := Dictionary new.
 	
@@ -617,13 +611,13 @@ updateLastUsageFor: aCartId
 	lastUsage at: aCartId put: (clock now).! !
 
 
-!BookstoreFacade methodsFor: 'checkout - private' stamp: 'C. L. 11/18/2019 00:10:31'!
+!BookstoreFacade methodsFor: 'checkout - private' stamp: 'C. L. 11/18/2019 14:18:37'!
 addAllPurchasesIn: aCartId to: aUserId
-	| cart |
-	cart := carts at: aCartId.
+	| session |
+	session := sessions at: aCartId.
 	
 	self initializeIfAbsentFor: aUserId.
-	cart onItemsDo: [:anItem | (purchasesHistory at: aUserId) add: anItem].! !
+	session doToCart: [:cart | cart onItemsDo: [:anItem | (purchasesHistory at: aUserId) add: anItem].] withTimestamp: (clock now).! !
 
 !BookstoreFacade methodsFor: 'checkout - private' stamp: 'C. L. 11/18/2019 00:10:31'!
 initializeIfAbsentFor: aUserId
@@ -631,7 +625,7 @@ initializeIfAbsentFor: aUserId
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'BookstoreFacade class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'BookstoreFacade class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 BookstoreFacade class
 	instanceVariableNames: ''!
 
@@ -673,7 +667,7 @@ acceptingItemsOf: aCatalog withUsers: users withMerchantProcessor: aMerchantProc
 	^self new initializeAcceptingItemsOf: aCatalog withUsers: users withMerchantProcessor: aMerchantProcessor withClock: aClock! !
 
 
-!classDefinition: #Cart category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #Cart category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #Cart
 	instanceVariableNames: 'catalog items'
 	classVariableNames: ''
@@ -756,7 +750,7 @@ add: aQuantity of: anItem
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cart class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'Cart class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Cart class
 	instanceVariableNames: ''!
 
@@ -766,7 +760,52 @@ acceptingItemsOf: aCatalog
 	^self new initializeAcceptingItemsOf: aCatalog ! !
 
 
-!classDefinition: #Cashier category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #CartSession category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
+Object subclass: #CartSession
+	instanceVariableNames: 'userId cart lastUsage'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!CartSession methodsFor: 'initialization' stamp: 'C. L. 11/18/2019 14:06:15'!
+initializeFor: aUserId acceptingItemsOf: aCatalog withTimestamp: aTimestamp
+	cart := Cart acceptingItemsOf: aCatalog .
+	userId := aUserId .
+	lastUsage := aTimestamp .! !
+
+
+!CartSession methodsFor: 'do on cart' stamp: 'C. L. 11/18/2019 14:12:48'!
+assertSessionNotExpiredOn: aTimestamp
+	(aTimestamp - lastUsage > (30 minutes)) ifTrue: [self error: (self class expiredSessionErrorMessage)].! !
+
+!CartSession methodsFor: 'do on cart' stamp: 'C. L. 11/18/2019 14:13:35'!
+doToCart: aBlock withTimestamp: aTimestamp
+	self assertSessionNotExpiredOn: aTimestamp.
+	lastUsage := aTimestamp .
+	^(aBlock value: cart).! !
+
+
+!CartSession methodsFor: 'query' stamp: 'C. L. 11/18/2019 14:06:32'!
+userId
+	^userId! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CartSession class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
+CartSession class
+	instanceVariableNames: ''!
+
+!CartSession class methodsFor: 'error messages' stamp: 'C. L. 11/18/2019 14:09:10'!
+expiredSessionErrorMessage
+	^'This session is expired'.! !
+
+
+!CartSession class methodsFor: 'instance creation' stamp: 'C. L. 11/18/2019 14:05:39'!
+for: aUserId acceptingItemsOf: aCatalog withTimestamp: aTimestamp
+	^self new initializeFor: aUserId acceptingItemsOf: aCatalog withTimestamp: aTimestamp! !
+
+
+!classDefinition: #Cashier category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #Cashier
 	instanceVariableNames: 'cart salesBook merchantProcessor creditCard total'
 	classVariableNames: ''
@@ -817,7 +856,7 @@ initializeToCheckout: aCart charging: aCreditCard throught: aMerchantProcessor r
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cashier class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'Cashier class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Cashier class
 	instanceVariableNames: ''!
 
@@ -857,7 +896,7 @@ creditCardHasNoCreditErrorMessage
 	^'Credit card has no credit'! !
 
 
-!classDefinition: #CreditCard category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #CreditCard category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #CreditCard
 	instanceVariableNames: 'expiration'
 	classVariableNames: ''
@@ -877,7 +916,7 @@ initializeExpiringOn: aMonth
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CreditCard class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'CreditCard class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 CreditCard class
 	instanceVariableNames: ''!
 
@@ -887,7 +926,7 @@ expiringOn: aMonth
 	^self new initializeExpiringOn: aMonth! !
 
 
-!classDefinition: #FakeClock category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #FakeClock category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #FakeClock
 	instanceVariableNames: 'currentTime'
 	classVariableNames: ''
@@ -912,7 +951,7 @@ today
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FakeClock class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'FakeClock class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 FakeClock class
 	instanceVariableNames: ''!
 
@@ -921,7 +960,7 @@ now: aTime
 	^self new initializeNow: aTime.! !
 
 
-!classDefinition: #Sale category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #Sale category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #Sale
 	instanceVariableNames: 'total'
 	classVariableNames: ''
@@ -941,7 +980,7 @@ initializeTotal: aTotal
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Sale class' category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: 'Sale class' category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Sale class
 	instanceVariableNames: ''!
 
@@ -952,7 +991,7 @@ of: aTotal
 	^self new initializeTotal: aTotal ! !
 
 
-!classDefinition: #StoreTestObjectsFactory category: #TusLibros stamp: 'C. L. 11/18/2019 13:12:07'!
+!classDefinition: #StoreTestObjectsFactory category: #TusLibros stamp: 'C. L. 11/18/2019 14:21:31'!
 Object subclass: #StoreTestObjectsFactory
 	instanceVariableNames: 'today'
 	classVariableNames: ''
