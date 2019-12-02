@@ -1,4 +1,4 @@
-!classDefinition: #CartTest category: #'TusLibros-Tests' stamp: 'C. L. 12/1/2019 16:53:46'!
+!classDefinition: #CartTest category: #'TusLibros-Tests' stamp: 'C. L. 12/2/2019 13:46:37'!
 TestCase subclass: #CartTest
 	instanceVariableNames: 'testObjectsFactory'
 	classVariableNames: ''
@@ -163,7 +163,7 @@ setUp
 	testObjectsFactory := StoreTestObjectsFactory new.! !
 
 
-!classDefinition: #CashierTest category: #'TusLibros-Tests' stamp: 'C. L. 12/1/2019 16:53:46'!
+!classDefinition: #CashierTest category: #'TusLibros-Tests' stamp: 'C. L. 12/2/2019 13:46:37'!
 TestCase subclass: #CashierTest
 	instanceVariableNames: 'testObjectsFactory debitBehavior'
 	classVariableNames: ''
@@ -317,7 +317,7 @@ debit: anAmount from: aCreditCard
 	^debitBehavior value: anAmount value: aCreditCard ! !
 
 
-!classDefinition: #TusLibrosSystemFacadeTest category: #'TusLibros-Tests' stamp: 'C. L. 12/1/2019 16:53:46'!
+!classDefinition: #TusLibrosSystemFacadeTest category: #'TusLibros-Tests' stamp: 'C. L. 12/2/2019 13:46:37'!
 TestCase subclass: #TusLibrosSystemFacadeTest
 	instanceVariableNames: 'testObjectsFactory clock systemFacade'
 	classVariableNames: ''
@@ -354,7 +354,7 @@ test22CanShowDetailsForAllBooksEvenIfAbsent
 	self assert: details includes: (systemFacade detailsFor: testObjectsFactory anotherItemSellByTheStore inCartIdentifiedAs: cartId).! !
 
 
-!TusLibrosSystemFacadeTest methodsFor: 'tests - add to cart ' stamp: 'C. L. 12/1/2019 00:43:45'!
+!TusLibrosSystemFacadeTest methodsFor: 'tests - add to cart ' stamp: 'C. L. 12/1/2019 21:01:36'!
 test04CanAddItemsToACreatedCart
 
 	| cartId |
@@ -720,7 +720,7 @@ revertTime: aDuration
 	clock revertTime: aDuration ! !
 
 
-!classDefinition: #StoreTestObjectsFactory category: #'TusLibros-Tests' stamp: 'C. L. 12/1/2019 16:53:46'!
+!classDefinition: #StoreTestObjectsFactory category: #'TusLibros-Tests' stamp: 'C. L. 12/2/2019 13:46:37'!
 Object subclass: #StoreTestObjectsFactory
 	instanceVariableNames: 'today'
 	classVariableNames: ''
@@ -842,7 +842,7 @@ customer
 	^'aCustomer'! !
 
 
-!classDefinition: #ManualClock category: #'TusLibros-Tests' stamp: 'C. L. 12/1/2019 16:53:46'!
+!classDefinition: #ManualClock category: #'TusLibros-Tests' stamp: 'C. L. 12/2/2019 13:46:37'!
 Clock subclass: #ManualClock
 	instanceVariableNames: 'now'
 	classVariableNames: ''
@@ -878,7 +878,7 @@ initializeNow: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ManualClock class' category: #'TusLibros-Tests' stamp: 'C. L. 12/1/2019 16:53:46'!
+!classDefinition: 'ManualClock class' category: #'TusLibros-Tests' stamp: 'C. L. 12/2/2019 13:46:37'!
 ManualClock class
 	instanceVariableNames: ''!
 

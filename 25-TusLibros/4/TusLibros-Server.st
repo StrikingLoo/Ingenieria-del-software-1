@@ -1,4 +1,4 @@
-!classDefinition: #RealClock category: #'TusLibros-Server' stamp: 'C. L. 12/1/2019 16:53:59'!
+!classDefinition: #RealClock category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 Clock subclass: #RealClock
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -9,14 +9,26 @@ Clock subclass: #RealClock
 now
 	^(DateAndTime now).! !
 
-!RealClock methodsFor: 'as yet unclassified' stamp: 'C. L. 12/1/2019 13:06:55'!
+!RealClock methodsFor: 'as yet unclassified' stamp: 'C. L. 12/1/2019 21:48:56'!
 today
-	^(self now Date).! !
+	^(self now date).! !
 
 
-!classDefinition: #TusLibrosServerController category: #'TusLibros-Server' stamp: 'C. L. 12/1/2019 16:53:59'!
+!classDefinition: #AlwaysSucceedingMerchantProcessor category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
+MerchantProcessor subclass: #AlwaysSucceedingMerchantProcessor
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Server'!
+
+!AlwaysSucceedingMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'C. L. 12/1/2019 21:36:15'!
+debit: anAmount from: aCreditCard
+	! !
+
+
+!classDefinition: #TusLibrosServerController category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 Object subclass: #TusLibrosServerController
-	instanceVariableNames: 'webServer port stringGenius tusLibrosSystemFacade'
+	instanceVariableNames: 'webServer port stringGenius tusLibrosSystemFacade salesBook merchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Server'!
@@ -52,10 +64,18 @@ createService: aServiceName for: aWebServer doOrSend404: aClosure
 			request send404Response: (anError messageText) ]].
 ! !
 
-!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/1/2019 13:32:49'!
-initializeWith: aPortNumber authenticatingWith: users acceptingItemsOf: aCatalog registeringOn: aSalesBook debitingThrought: aMerchantProcessor measuringTimeWith: aClock
-
-	tusLibrosSystemFacade := TusLibrosSystemFacade authenticatingWith: users acceptingItemsOf: aCatalog registeringOn: aSalesBook debitingThrought: aMerchantProcessor measuringTimeWith: aClock.
+!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/1/2019 21:36:42'!
+initializeWith: aPortNumber authenticatingWith: users acceptingItemsOf: aCatalog measuringTimeWith: aClock
+	
+	merchantProcessor := AlwaysSucceedingMerchantProcessor new.
+	salesBook := OrderedCollection new.
+	
+	tusLibrosSystemFacade := TusLibrosSystemFacade
+			authenticatingWith: users
+			acceptingItemsOf: aCatalog
+			registeringOn: salesBook
+			debitingThrought: merchantProcessor
+			measuringTimeWith: aClock.
 	
 	port:= aPortNumber.
 	
@@ -79,7 +99,7 @@ refreshServices
 		self createService: serviceName for: webServer doOrSend404: serviceBehavior.
 		].! !
 
-!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/1/2019 16:23:09'!
+!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/1/2019 21:34:14'!
 services
 	| allServices |
 	allServices := Dictionary new.
@@ -112,22 +132,39 @@ services
 		bookISBN := request fields at: 'book'.
 		cartId := ((request fields at: 'cartId') asInteger) .
 		bookInfo := tusLibrosSystemFacade detailsFor: bookISBN inCartIdentifiedAs: cartId .
-		bookInfoAsJSON := WebUtils jsonEncode: (bookInfo asString).
+		bookInfoAsJSON := WebUtils jsonEncode: bookInfo.
 		self sendResponseAsUTF8: bookInfoAsJSON toRequest: request.
 		].
 	
 	allServices at: '/cartView' put:[:request | |cartId cartInfo cartInfoAsJSON|
 		cartId := (request fields at: 'cartId') asInteger.
-		cartInfo := tusLibrosSystemFacade listCartIdentifiedAs: cartId.
-		cartInfoAsJSON := WebUtils jsonEncode: (cartInfo asString).
+		cartInfo := tusLibrosSystemFacade listCartAsDictIdentifiedAs: cartId.
+		cartInfoAsJSON := WebUtils jsonEncode: cartInfo.
 		self sendResponseAsUTF8: cartInfoAsJSON toRequest: request.
 		].
 	
 	allServices at: '/catalogView' put:[:request | |cartId catalogInfo catalogInfoAsJSON|
 		cartId := (request fields at: 'cartId') asInteger.
 		catalogInfo := tusLibrosSystemFacade catalogItemDetailsForCartIdentifiedAs: cartId.
-		catalogInfoAsJSON := WebUtils jsonEncode: (catalogInfo asString).
+		catalogInfoAsJSON := WebUtils jsonEncode: catalogInfo.
 		self sendResponseAsUTF8: catalogInfoAsJSON toRequest: request.
+		].
+	
+	allServices at: '/checkout' put:[:request | |cartId ticket ticketAsJSON|
+		cartId := (request fields at: 'cartId') asInteger.
+		ticket := tusLibrosSystemFacade
+				checkOutCartIdentifiedAs: cartId
+				withCreditCardNumbered: '1234567890123456'
+				ownedBy: 'Caro'
+				expiringOn: (Month current).
+		ticketAsJSON := WebUtils jsonEncode: ticket.
+		self sendResponseAsUTF8: ticketAsJSON toRequest: request.
+		].
+	
+	allServices at: '/purchasesHistory' put:[:request | |purchases purchasesAsJSON|
+		purchases := tusLibrosSystemFacade listPurchasesOf: 'Caro' authenticatingWith: 'cosasDeCaro'.
+		purchasesAsJSON := WebUtils jsonEncode: purchases.
+		self sendResponseAsUTF8: purchasesAsJSON toRequest: request.
 		].
 	
 	^allServices.
@@ -142,18 +179,16 @@ sendResponseAsUTF8: content toRequest: request
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TusLibrosServerController class' category: #'TusLibros-Server' stamp: 'C. L. 12/1/2019 16:53:59'!
+!classDefinition: 'TusLibrosServerController class' category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 TusLibrosServerController class
 	instanceVariableNames: ''!
 
-!TusLibrosServerController class methodsFor: 'instance creation' stamp: 'C. L. 11/28/2019 14:25:15'!
+!TusLibrosServerController class methodsFor: 'instance creation' stamp: 'C. L. 12/1/2019 21:20:45'!
 listeningOn: aPortNumber
 
 	^self new initializeWith: aPortNumber
 			authenticatingWith: (self defaultUserList)
 			acceptingItemsOf: (self defaultCatalog)
-			registeringOn: (self defaultSalesBook)
-			debitingThrought: MerchantProcessor new
 			measuringTimeWith: RealClock new.! !
 
 
