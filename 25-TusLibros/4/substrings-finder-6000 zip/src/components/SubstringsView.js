@@ -10,8 +10,8 @@ class SubstringsComponent extends React.Component {
     }
   }
   
-  componentDidMount() {
-    const cartId = this.props.cartId
+  reloadCatalog() {
+	  const cartId = this.props.cartId
 	  
     this.setState({
       loading: true,
@@ -36,6 +36,34 @@ class SubstringsComponent extends React.Component {
         })
       })
   }
+  
+  componentDidMount() {
+    this.reloadCatalog()
+  }
+  
+  handleAddBook(ISBN){
+	  const cartId = this.props.cartId
+	  getLocalAsJson(`addToCart?cartId=${cartId}&book=${ISBN}`)
+      .catch(err => {
+        this.setState({
+          loading: false,
+          error: err,
+        })
+      })
+	  this.reloadCatalog();
+  }
+  
+  handleRemoveBook(ISBN){
+	  const cartId = this.props.cartId
+	  getLocalAsJson(`removeFromCart?cartId=${cartId}&book=${ISBN}`)
+      .catch(err => {
+        this.setState({
+          loading: false,
+          error: err,
+        })
+      })
+	  this.reloadCatalog();
+  }
 
   render() {
     const {
@@ -57,7 +85,7 @@ class SubstringsComponent extends React.Component {
     return (
       <div>
         <Typography component="h1" gutterBottom>
-          caca
+          Vista de catálogo:
           </Typography>
         <List component="nav" className={classes.rootList} aria-label="substrings">
           {
@@ -66,9 +94,10 @@ class SubstringsComponent extends React.Component {
                 <ListItem>
                   <ListItemText primary={catalogItem['ISBN']} />
                   <ListItemText primary={catalogItem['title']} />
-                  <Button onClick={()=>alert("+")}> + </Button>
+                  <Button onClick={()=>this.handleAddBook(catalogItem['ISBN'])}> + </Button>
                   <ListItemText primary={catalogItem['quantity']} />
-                  <Button onClick={()=>alert("-")}> - </Button> 
+                  <Button onClick={()=>this.handleRemoveBook(catalogItem['ISBN'])}> - </Button>
+                  <Button onClick={()=>alert("detalles!")}> Detalles </Button>
                 </ListItem>
               )
             })

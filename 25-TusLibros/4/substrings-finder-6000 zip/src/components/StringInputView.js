@@ -55,7 +55,7 @@ class StringInputComponent extends React.Component {
     return (
       <div>
         <Typography component="h1" gutterBottom>
-          Ingrese un texto donde buscar subcadenas
+          Ingrese su usuario y contraseña
           </Typography>
         <FormControl fullWidth className={classes.textField} variant="outlined">
           <InputLabel htmlFor="outlined-adornment-amount">Usuario</InputLabel>
