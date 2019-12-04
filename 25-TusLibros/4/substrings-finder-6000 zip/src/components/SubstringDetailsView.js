@@ -8,38 +8,19 @@ class SubstringDetailsComponent extends React.Component {
       error: null,
     }
   }
-
-  componentDidMount() {
-    const substring = this.props.selectedSubstring
-
+  
+  reloadDetails(){
+    const ISBN = this.props.ISBN
+    const cartId = this.props.cartId
+    
     this.setState({
       loading: true,
       error: null,
     })
-
-    let details = {}
-
-    getLocalAsJson(`firstletter?word=${substring}`)
+    
+    getLocalAsJson(`detailView?cartId=${cartId}&book=${ISBN}`)
       .then(function (response) {
         return response.json()
-      })
-      .then(function (json) {
-        details["firstLetter"] = json
-        return getLocalAsJson(`touppercase?word=${substring}`)
-      })
-      .then(function (response) {
-        return response.json()
-      })
-      .then(function (json) {
-        details["uppercase"] = json
-        return getLocalAsJson(`vowels?word=${substring}`)
-      })
-      .then(function(response) {
-        return response.json()
-      })
-      .then(function (json) {
-        details["vowels"] = json
-        return details
       })
       .then((details) => {
         this.setState({
@@ -48,18 +29,34 @@ class SubstringDetailsComponent extends React.Component {
         })
       })
       .catch(err => {
+        alert("error")
         this.setState({
           loading: false,
           error: err,
         })
       })
   }
+  
+  handleAddBook(cartId, ISBN){
+    this.props.handleAddBook(cartId, ISBN)
+    this.reloadDetails()
+  }
+  
+  handleRemoveBook(cartId, ISBN){
+    this.props.handleRemoveBook(cartId, ISBN)
+    this.reloadDetails()
+  }
+  
+  componentDidMount(){
+    this.reloadDetails()
+  }
 
   render() {
-    const {
-      // router,
-      selectedSubstring,
+	  const {
+      router,
       classes,
+      cartId,
+      ISBN,
     } = this.props
 
     const {
@@ -68,19 +65,30 @@ class SubstringDetailsComponent extends React.Component {
       error,
     } = this.state
 
-    if (loading) return <div>Loading...</div>
-    if (error) return <div>{error}</div>
-
+    if (loading) return (<div>Loading...</div>)
+    if (error) return (<div>{error}</div>)
     return (
       <div>
         <Typography variant="h4" component="h4" gutterBottom>
-          Detalles de <b>{selectedSubstring}</b>
+          Detalles de <b>{ISBN}</b>
         </Typography>
 
         <TextField
           id="outlined-read-only-input"
-          label="Primera letra"
-          defaultValue={details["firstLetter"]}
+          label="Título"
+          defaultValue={details["title"]}
+          className={classes.textFieldDetails}
+          margin="normal"
+          InputProps={{
+            readOnly: true,
+          }}
+          variant="outlined"
+        />
+
+        <TextField
+          id="outlined-read-only-input"
+          label="Autore"
+          defaultValue={details["author"]}
           className={classes.textFieldDetails}
           margin="normal"
           InputProps={{
@@ -90,8 +98,8 @@ class SubstringDetailsComponent extends React.Component {
         />
         <TextField
           id="outlined-read-only-input"
-          label="En mayúsculas"
-          defaultValue={details["uppercase"]}
+          label="Código ISBN"
+          defaultValue={details["ISBN"]}
           className={classes.textFieldDetails}
           margin="normal"
           InputProps={{
@@ -101,8 +109,8 @@ class SubstringDetailsComponent extends React.Component {
         />
         <TextField
           id="outlined-read-only-input"
-          label="Vocales"
-          defaultValue={details["vowels"]}
+          label="Precio"
+          defaultValue={details["price"]}
           className={classes.textFieldDetails}
           margin="normal"
           InputProps={{
@@ -110,6 +118,11 @@ class SubstringDetailsComponent extends React.Component {
           }}
           variant="outlined"
         />
+
+        Cantidad:
+        <Button onClick={()=>this.handleRemoveBook(cartId, ISBN)}>-</Button>
+        {details["quantity"]}
+        <Button onClick={()=>this.handleAddBook(cartId, ISBN)}>+</Button>
       </div>
     )
   }

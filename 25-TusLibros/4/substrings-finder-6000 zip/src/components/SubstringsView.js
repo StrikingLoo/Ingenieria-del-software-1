@@ -11,7 +11,7 @@ class SubstringsComponent extends React.Component {
   }
   
   reloadCatalog() {
-	  const cartId = this.props.cartId
+	const cartId = this.props.cartId
 	  
     this.setState({
       loading: true,
@@ -42,27 +42,22 @@ class SubstringsComponent extends React.Component {
   }
   
   handleAddBook(ISBN){
-	  const cartId = this.props.cartId
-	  getLocalAsJson(`addToCart?cartId=${cartId}&book=${ISBN}`)
-      .catch(err => {
-        this.setState({
-          loading: false,
-          error: err,
-        })
-      })
+    const cartId = this.props.cartId
+	  this.props.handleAddBook(cartId, ISBN)
 	  this.reloadCatalog();
   }
   
   handleRemoveBook(ISBN){
 	  const cartId = this.props.cartId
-	  getLocalAsJson(`removeFromCart?cartId=${cartId}&book=${ISBN}`)
-      .catch(err => {
-        this.setState({
-          loading: false,
-          error: err,
-        })
-      })
+	  this.props.handleRemoveBook(cartId, ISBN)
 	  this.reloadCatalog();
+  }
+  
+  navigateToDetailView(ISBN){
+    this.setState({
+      ISBN: ISBN
+    })
+	  this.props.router.navigate("/details", {ISBN: ISBN});
   }
 
   render() {
@@ -94,10 +89,10 @@ class SubstringsComponent extends React.Component {
                 <ListItem>
                   <ListItemText primary={catalogItem['ISBN']} />
                   <ListItemText primary={catalogItem['title']} />
-                  <Button onClick={()=>this.handleAddBook(catalogItem['ISBN'])}> + </Button>
-                  <ListItemText primary={catalogItem['quantity']} />
                   <Button onClick={()=>this.handleRemoveBook(catalogItem['ISBN'])}> - </Button>
-                  <Button onClick={()=>alert("detalles!")}> Detalles </Button>
+                  <ListItemText primary={catalogItem['quantity']} />
+                  <Button onClick={()=>this.handleAddBook(catalogItem['ISBN'])}> + </Button>
+                  <Button onClick={()=>this.navigateToDetailView(catalogItem['ISBN'])}> Detalles </Button>
                 </ListItem>
               )
             })
