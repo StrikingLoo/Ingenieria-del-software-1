@@ -72,6 +72,7 @@ class StringInputComponent extends React.Component {
           <OutlinedInput
             id="outlined-adornment-amount"
             value={password}
+            type="password"
             onChange={(ev)=>this.handlePasswordChange(ev)}
             startAdornment={<InputAdornment position="start">></InputAdornment>}
             labelWidth={60}
@@ -81,7 +82,7 @@ class StringInputComponent extends React.Component {
         <Button
           color="inherit"
           onClick={(ev)=>this.handleSend(ev)}>
-          Enviar
+          Ingresar
       </Button>
       </div>
     )
