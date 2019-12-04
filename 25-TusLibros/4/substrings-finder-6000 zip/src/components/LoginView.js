@@ -52,7 +52,9 @@ class LoginComponent extends React.Component {
           Login
           </Typography>
         <FormControl fullWidth className={classes.textField} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-amount">Usuario</InputLabel>
+          <InputLabel htmlFor="outlined-adornment-amount">
+            Usuario
+          </InputLabel>
           <OutlinedInput
             id="outlined-adornment-amount"
             value={sentence}
@@ -60,7 +62,7 @@ class LoginComponent extends React.Component {
             startAdornment={<InputAdornment position="start">></InputAdornment>}
             labelWidth={60}
           />
-          <InputLabel htmlFor="outlined-adornment-amount">Contraseña</InputLabel>
+          <InputLabel htmlFor="outlined-adornment-amount">Contraseña </InputLabel>
           <OutlinedInput
             id="outlined-adornment-amount"
             value={sentence}
@@ -72,8 +74,8 @@ class LoginComponent extends React.Component {
 
         <Button
           color="inherit"
-          onClick={(ev)=>this.handleSend(ev)}>
-          Enviar
+          onClick={(ev)=>this.handleChange(ev)}>
+          Ingresar
       </Button>
       </div>
     )

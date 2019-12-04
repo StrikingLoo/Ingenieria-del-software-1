@@ -30,7 +30,7 @@ class App extends React.Component {
   }
 
   render() {
-    let title = "Substrings Finder 6000"
+    let title = "Tus Libros"
     let content = "Where am I?"
     const router = {
       current: () => this.state.path,
@@ -45,7 +45,7 @@ class App extends React.Component {
         router={router}
       />)
     } else if (this.state.path === "/list") {
-      content = (<SubstringsView
+      content = (<BookDetailsView
         router={router}
         substrings={this.state.substrings}
         cartId={this.state.cartId}
@@ -53,7 +53,7 @@ class App extends React.Component {
         handleRemoveBook={this.handleRemoveBook}
       />)
     } else if (this.state.path === "/details") {
-      content = (<SubstringDetailsView
+      content = (<BooksCatalogView
         router={router}
         cartId={this.state.cartId}
         ISBN={this.state.ISBN}

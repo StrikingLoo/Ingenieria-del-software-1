@@ -72,7 +72,6 @@ class StringInputComponent extends React.Component {
           <OutlinedInput
             id="outlined-adornment-amount"
             value={password}
-            type="password"
             onChange={(ev)=>this.handlePasswordChange(ev)}
             startAdornment={<InputAdornment position="start">></InputAdornment>}
             labelWidth={60}
