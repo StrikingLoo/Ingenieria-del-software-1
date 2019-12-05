@@ -1,4 +1,4 @@
-!classDefinition: #RealClock category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: #RealClock category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 Clock subclass: #RealClock
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -14,7 +14,7 @@ today
 	^(self now date).! !
 
 
-!classDefinition: #AlwaysSucceedingMerchantProcessor category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: #AlwaysSucceedingMerchantProcessor category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 MerchantProcessor subclass: #AlwaysSucceedingMerchantProcessor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -26,7 +26,7 @@ debit: anAmount from: aCreditCard
 	! !
 
 
-!classDefinition: #TusLibrosServerController category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: #TusLibrosServerController category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 Object subclass: #TusLibrosServerController
 	instanceVariableNames: 'webServer port stringGenius tusLibrosSystemFacade salesBook merchantProcessor'
 	classVariableNames: ''
@@ -99,7 +99,7 @@ refreshServices
 		self createService: serviceName for: webServer doOrSend404: serviceBehavior.
 		].! !
 
-!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/5/2019 09:50:35'!
+!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/1/2019 21:34:14'!
 services
 	| allServices |
 	allServices := Dictionary new.
@@ -136,12 +136,11 @@ services
 		self sendResponseAsUTF8: bookInfoAsJSON toRequest: request.
 		].
 	
-	allServices at: '/cartView' put:[:request | |cartId cartInfo cartDetails cartDetailsAsJSON|
+	allServices at: '/cartView' put:[:request | |cartId cartInfo cartInfoAsJSON|
 		cartId := (request fields at: 'cartId') asInteger.
 		cartInfo := tusLibrosSystemFacade listCartAsDictIdentifiedAs: cartId.
-		cartDetails := (cartInfo keys) collect: [:anItemKey | tusLibrosSystemFacade detailsFor: anItemKey inCartIdentifiedAs: cartId].
-		cartDetailsAsJSON := WebUtils jsonEncode: cartDetails.
-		self sendResponseAsUTF8: cartDetailsAsJSON toRequest: request.
+		cartInfoAsJSON := WebUtils jsonEncode: cartInfo.
+		self sendResponseAsUTF8: cartInfoAsJSON toRequest: request.
 		].
 	
 	allServices at: '/catalogView' put:[:request | |cartId catalogInfo catalogInfoAsJSON|
@@ -180,7 +179,7 @@ sendResponseAsUTF8: content toRequest: request
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TusLibrosServerController class' category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: 'TusLibrosServerController class' category: #'TusLibros-Server' stamp: 'C. L. 12/2/2019 13:46:43'!
 TusLibrosServerController class
 	instanceVariableNames: ''!
 

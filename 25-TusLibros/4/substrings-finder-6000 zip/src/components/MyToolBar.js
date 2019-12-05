@@ -2,24 +2,6 @@ class MyToolBarComponent extends React.Component {
   constructor(props) {
     super(props)
   }
-  
-  renderNavButtons(){
-    const router = this.props.router
-    return(
-      <div>
-        <Button
-          color="inherit"
-          onClick={()=>router.navigate("/list")}>
-          Ver Catálogo
-        </Button>
-        <Button
-          color="inherit"
-          onClick={()=>router.navigate("/cart", {cartId: this.props.cartId})}>
-          Ver Carrito
-        </Button>
-      </div>
-    );
-  }
 
   render() {
     const {
@@ -35,19 +17,19 @@ class MyToolBarComponent extends React.Component {
     if (current_path === "/") {
       icon = "home"
       onclick = () => {}
-    } else if (current_path === "/list" || current_path === "/cart") {
+    } else if (current_path === "/list") {
       icon = "home"
-      onclick = () => router.navigate("/")
+      onclick = () => router.navigate("/", {
+        substrings: [],
+        selectedSubstring: "",
+      })
     } else if (current_path === "/details") {
       icon = "keyboard_arrow_left"
-      onclick = () => router.navigate("/list")
+      onclick = () => router.navigate("/list", {
+        selectedSubstring: "",
+      })
     } else {
       console.error("Not a valid current path!")
-    }
-    
-    let navButtons = ""
-    if(current_path != "/"){
-      navButtons = this.renderNavButtons()
     }
 
     return (
@@ -65,12 +47,12 @@ class MyToolBarComponent extends React.Component {
             <Typography variant="h6" className={classes.title}>
               {title}
             </Typography>
-            {navButtons}
           </Toolbar>
         </AppBar>
       </div>
     )
   }
+
 }
 
 // Add style

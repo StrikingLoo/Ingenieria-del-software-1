@@ -63,6 +63,7 @@ class BookDetailsComponent extends React.Component {
   render() {
     const {
       router,
+      substrings,
       classes,
     } = this.props
     
@@ -81,7 +82,7 @@ class BookDetailsComponent extends React.Component {
         <Typography component="h1" gutterBottom>
           Vista de catálogo:
           </Typography>
-        <List component="nav" className={classes.rootList} aria-label="books">
+        <List component="nav" className={classes.rootList} aria-label="substrings">
           {
             catalogInfo.map((catalogItem, ix) => {
               return (
