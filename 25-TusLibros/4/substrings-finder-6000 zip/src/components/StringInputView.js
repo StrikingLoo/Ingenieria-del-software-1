@@ -35,7 +35,7 @@ class StringInputComponent extends React.Component {
         return response.json()
       })
       .then(function (json) {
-        router.navigate("/list", { substrings: ["caca", "pis"], cartId: json })
+        router.navigate("/list", {cartId: json })
       })
       .catch(function (error) {
         console.log('Looks like there was a problem: \n', error);
