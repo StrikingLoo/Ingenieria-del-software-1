@@ -47,7 +47,13 @@ class App extends React.Component {
     } else if (this.state.path === "/list") {
       content = (<BookDetailsView
         router={router}
-        substrings={this.state.substrings}
+        cartId={this.state.cartId}
+        handleAddBook={this.handleAddBook}
+        handleRemoveBook={this.handleRemoveBook}
+      />)
+    } else if (this.state.path === "/cart") {
+      content = (<CartView
+        router={router}
         cartId={this.state.cartId}
         handleAddBook={this.handleAddBook}
         handleRemoveBook={this.handleRemoveBook}
@@ -66,6 +72,7 @@ class App extends React.Component {
         <MyToolBar
           title={title}
           router={router}
+          cartId={this.state.cartId}
         />
         <Container maxWidth="sm">
           <div style={{ marginTop: 24, }}>

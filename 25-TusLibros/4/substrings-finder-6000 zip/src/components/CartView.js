@@ -1,32 +1,32 @@
-class BookDetailsComponent extends React.Component {
+class CartComponent extends React.Component {
   constructor(props) {
     super(props)
     
     this.state = {
       details: {},
-      catalogInfo: [],
+      cartInfo: [],
       loading: false,
       error: null,
     }
   }
   
-  reloadCatalog() {
-	const cartId = this.props.cartId
+  reloadCart() {
+    const cartId = this.props.cartId
 	  
     this.setState({
       loading: true,
       error: null,
     })
     
-    let catalogInfo = []
-    getLocalAsJson(`catalogView?cartId=${cartId}`)
+    let cartInfo = []
+    getLocalAsJson(`cartView?cartId=${cartId}`)
       .then(function (response) {
         return response.json()
       })
-      .then((catalogInfo) => {
+      .then((cartInfo) => {
         this.setState({
           loading: false,
-          catalogInfo: catalogInfo
+          cartInfo: cartInfo
         })
       })
       .catch(err => {
@@ -38,19 +38,19 @@ class BookDetailsComponent extends React.Component {
   }
   
   componentDidMount() {
-    this.reloadCatalog()
+    this.reloadCart()
   }
   
   handleAddBook(ISBN){
     const cartId = this.props.cartId
 	  this.props.handleAddBook(cartId, ISBN)
-	  this.reloadCatalog();
+	  this.reloadCart();
   }
   
   handleRemoveBook(ISBN){
 	  const cartId = this.props.cartId
 	  this.props.handleRemoveBook(cartId, ISBN)
-	  this.reloadCatalog();
+	  this.reloadCart();
   }
   
   navigateToDetailView(ISBN){
@@ -64,11 +64,12 @@ class BookDetailsComponent extends React.Component {
     const {
       router,
       classes,
+      cartId,
     } = this.props
     
     const {
       details,
-      catalogInfo,
+      cartInfo,
       loading,
       error,
     } = this.state
@@ -79,19 +80,19 @@ class BookDetailsComponent extends React.Component {
     return (
       <div>
         <Typography component="h1" gutterBottom>
-          Vista de catálogo:
+          Vista de carrito:
           </Typography>
         <List component="nav" className={classes.rootList} aria-label="books">
           {
-            catalogInfo.map((catalogItem, ix) => {
+            cartInfo.map((cartItem, ix) => {
               return (
                 <ListItem>
-                  <ListItemText primary={catalogItem['ISBN']} />
-                  <ListItemText primary={catalogItem['title']} />
-                  <Button onClick={()=>this.handleRemoveBook(catalogItem['ISBN'])}> - </Button>
-                  <ListItemText primary={catalogItem['quantity']} />
-                  <Button onClick={()=>this.handleAddBook(catalogItem['ISBN'])}> + </Button>
-                  <Button onClick={()=>this.navigateToDetailView(catalogItem['ISBN'])}> Detalles </Button>
+                  <ListItemText primary={cartItem['ISBN']} />
+                  <ListItemText primary={cartItem['title']} />
+                  <Button onClick={()=>this.handleRemoveBook(cartItem['ISBN'])}> - </Button>
+                  <ListItemText primary={cartItem['quantity']} />
+                  <Button onClick={()=>this.handleAddBook(cartItem['ISBN'])}> + </Button>
+                  <Button onClick={()=>this.navigateToDetailView(cartItem['ISBN'])}> Detalles </Button>
                 </ListItem>
               )
             })
@@ -103,6 +104,6 @@ class BookDetailsComponent extends React.Component {
 }
 
 // Add style
-const BookDetailsView = withStyles(styles, {
+const CartView = withStyles(styles, {
   withTheme: true
-})(BookDetailsComponent)
+})(CartComponent)
