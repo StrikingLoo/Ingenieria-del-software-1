@@ -45,7 +45,7 @@ class App extends React.Component {
         router={router}
       />)
     } else if (this.state.path === "/list") {
-      content = (<BookDetailsView
+      content = (<CatalogView
         router={router}
         cartId={this.state.cartId}
         handleAddBook={this.handleAddBook}

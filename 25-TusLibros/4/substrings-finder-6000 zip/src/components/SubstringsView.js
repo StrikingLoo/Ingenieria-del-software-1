@@ -1,4 +1,4 @@
-class BookDetailsComponent extends React.Component {
+class CatalogComponent extends React.Component {
   constructor(props) {
     super(props)
     
@@ -103,6 +103,6 @@ class BookDetailsComponent extends React.Component {
 }
 
 // Add style
-const BookDetailsView = withStyles(styles, {
+const CatalogView = withStyles(styles, {
   withTheme: true
-})(BookDetailsComponent)
+})(CatalogComponent)
