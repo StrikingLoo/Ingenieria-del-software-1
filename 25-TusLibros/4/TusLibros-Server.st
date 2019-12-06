@@ -1,4 +1,4 @@
-!classDefinition: #RealClock category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: #RealClock category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 22:10:45'!
 Clock subclass: #RealClock
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -14,7 +14,7 @@ today
 	^(self now date).! !
 
 
-!classDefinition: #AlwaysSucceedingMerchantProcessor category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: #AlwaysSucceedingMerchantProcessor category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 22:10:45'!
 MerchantProcessor subclass: #AlwaysSucceedingMerchantProcessor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -26,7 +26,7 @@ debit: anAmount from: aCreditCard
 	! !
 
 
-!classDefinition: #TusLibrosServerController category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: #TusLibrosServerController category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 22:10:45'!
 Object subclass: #TusLibrosServerController
 	instanceVariableNames: 'webServer port stringGenius tusLibrosSystemFacade salesBook merchantProcessor'
 	classVariableNames: ''
@@ -99,7 +99,7 @@ refreshServices
 		self createService: serviceName for: webServer doOrSend404: serviceBehavior.
 		].! !
 
-!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/5/2019 09:50:35'!
+!TusLibrosServerController methodsFor: 'initialization' stamp: 'C. L. 12/5/2019 22:07:13'!
 services
 	| allServices |
 	allServices := Dictionary new.
@@ -151,19 +151,22 @@ services
 		self sendResponseAsUTF8: catalogInfoAsJSON toRequest: request.
 		].
 	
-	allServices at: '/checkout' put:[:request | |cartId ticket ticketAsJSON|
+	allServices at: '/checkout' put:[:request | |cartId userId ticket ticketAsJSON|
 		cartId := (request fields at: 'cartId') asInteger.
+		userId := request fields at: 'user'.
 		ticket := tusLibrosSystemFacade
 				checkOutCartIdentifiedAs: cartId
 				withCreditCardNumbered: '1234567890123456'
-				ownedBy: 'Caro'
+				ownedBy: userId
 				expiringOn: (Month current).
 		ticketAsJSON := WebUtils jsonEncode: ticket.
 		self sendResponseAsUTF8: ticketAsJSON toRequest: request.
 		].
 	
-	allServices at: '/purchasesHistory' put:[:request | |purchases purchasesAsJSON|
-		purchases := tusLibrosSystemFacade listPurchasesOf: 'Caro' authenticatingWith: 'cosasDeCaro'.
+	allServices at: '/purchasesHistory' put:[:request | |userId password purchases purchasesAsJSON|
+		userId := request fields at: 'user'.
+		password := request fields at: 'password'.
+		purchases := tusLibrosSystemFacade listPurchasesOf: userId authenticatingWith: password.
 		purchasesAsJSON := WebUtils jsonEncode: purchases.
 		self sendResponseAsUTF8: purchasesAsJSON toRequest: request.
 		].
@@ -180,7 +183,7 @@ sendResponseAsUTF8: content toRequest: request
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TusLibrosServerController class' category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 09:51:58'!
+!classDefinition: 'TusLibrosServerController class' category: #'TusLibros-Server' stamp: 'C. L. 12/5/2019 22:10:45'!
 TusLibrosServerController class
 	instanceVariableNames: ''!
 
