@@ -41,7 +41,7 @@ class App extends React.Component {
     }
 
     if (this.state.path === "/") {
-      content = (<StringInputView
+      content = (<LoginView
         router={router}
       />)
     } else if (this.state.path === "/list") {
@@ -59,7 +59,7 @@ class App extends React.Component {
         handleRemoveBook={this.handleRemoveBook}
       />)
     } else if (this.state.path === "/details") {
-      content = (<BooksCatalogView
+      content = (<DetailsView
         router={router}
         cartId={this.state.cartId}
         ISBN={this.state.ISBN}

@@ -1,4 +1,4 @@
-class StringInputComponent extends React.Component {
+class LoginComponent extends React.Component {
   constructor(props) {
     super(props)
 
@@ -89,6 +89,6 @@ class StringInputComponent extends React.Component {
 }
 
 // Add style
-const StringInputView = withStyles(styles, {
+const LoginView = withStyles(styles, {
   withTheme: true
-})(StringInputComponent)
+})(LoginComponent)
