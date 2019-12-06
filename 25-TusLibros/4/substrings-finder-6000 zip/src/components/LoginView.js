@@ -1,16 +1,22 @@
-class LoginComponent extends React.Component {
+class StringInputComponent extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      user: "",
+      userId: "",
       password: "",
     }
   }
-
-  handleChange(event) {
-    this.setState({
-      sentence: event.target.value
+  
+  handleUserIdChange(event) {
+	this.setState({
+      userId: event.target.value
+    })
+  };
+  
+  handlePasswordChange(event) {
+	this.setState({
+      password: event.target.value
     })
   };
 
@@ -20,17 +26,16 @@ class LoginComponent extends React.Component {
     } = this.props
 
     const {
-      sentence,
-      user,
+      userId,
       password,
     } = this.state
 
-    getLocalAsJson(`substrings?sentence=${sentence}`)
+    getLocalAsJson(`createCart?user=${userId}&password=${password}`)
       .then(function (response) {
         return response.json()
       })
       .then(function (json) {
-        router.navigate("/list", { substrings: json })
+        router.navigate("/list", {cartId: json })
       })
       .catch(function (error) {
         console.log('Looks like there was a problem: \n', error);
@@ -39,7 +44,8 @@ class LoginComponent extends React.Component {
 
   render() {
     const {
-      sentence,
+      userId,
+      password,
     } = this.state
 
     const {
@@ -49,24 +55,24 @@ class LoginComponent extends React.Component {
     return (
       <div>
         <Typography component="h1" gutterBottom>
-          Login
+          Ingrese su usuario y contraseña
           </Typography>
         <FormControl fullWidth className={classes.textField} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-amount">
-            Usuario
-          </InputLabel>
+          <InputLabel htmlFor="outlined-adornment-amount">Usuario</InputLabel>
           <OutlinedInput
             id="outlined-adornment-amount"
-            value={sentence}
-            onChange={(ev)=>this.handleChange(ev)}
+            value={userId}
+            onChange={(ev)=>this.handleUserIdChange(ev)}
             startAdornment={<InputAdornment position="start">></InputAdornment>}
             labelWidth={60}
           />
-          <InputLabel htmlFor="outlined-adornment-amount">Contraseña </InputLabel>
+        </FormControl>
+        <FormControl fullWidth className={classes.textField} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-amount">Contraseña</InputLabel>
           <OutlinedInput
             id="outlined-adornment-amount"
-            value={sentence}
-            onChange={(ev)=>this.handleChange(ev)}
+            value={password}
+            onChange={(ev)=>this.handlePasswordChange(ev)}
             startAdornment={<InputAdornment position="start">></InputAdornment>}
             labelWidth={60}
           />
@@ -74,7 +80,7 @@ class LoginComponent extends React.Component {
 
         <Button
           color="inherit"
-          onClick={(ev)=>this.handleChange(ev)}>
+          onClick={(ev)=>this.handleSend(ev)}>
           Ingresar
       </Button>
       </div>
@@ -83,6 +89,6 @@ class LoginComponent extends React.Component {
 }
 
 // Add style
-const LoginView = withStyles(styles, {
+const StringInputView = withStyles(styles, {
   withTheme: true
-})(LoginComponent)
+})(StringInputComponent)
